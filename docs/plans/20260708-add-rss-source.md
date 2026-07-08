@@ -305,16 +305,16 @@ export type AddSourceInput = z.infer<typeof AddSourceSchema>;
 - Create: `apps/api/src/sources/articles.repository.ts`
 - Create: `apps/api/src/sources/articles.repository.spec.ts`
 
-- [ ] `ArticlesRepository` с методом `upsertMany(tx: Prisma.TransactionClient, sourceId: string, items: RssItem[]): Promise<number>`
+- [x] `ArticlesRepository` с методом `upsertMany(tx: Prisma.TransactionClient, sourceId: string, items: RssItem[]): Promise<number>`
       — принимает транзакционный клиент (см. Task 6), пропускает элементы без `guid` и `link`
-      (не могут быть дедуплицированы), `upsert` по `@@unique([sourceId, externalId])`
-      (`externalId = guid ?? link`), `publishedAt` = `isoDate ?? pubDate ?? null`; возвращает
-      количество **новых** (не встречавшихся ранее) статей — именно это значение попадает в
-      `articlesCount` ответа `POST /sources`
-- [ ] написать тесты: новые статьи создаются, повторный вызов с теми же `externalId` не дублирует
-      записи и не увеличивает счётчик (мок Prisma `upsert`), элемент без `guid`/`link` пропускается,
-      элемент без даты сохраняется с `publishedAt: null`
-- [ ] run tests - must pass before next task
+      (не могут быть дедуплицированы), дедупликация по `@@unique([sourceId, externalId])`
+      (`externalId = guid ?? link`) реализована как `create` + перехват `P2002` (не `upsert`, чтобы
+      точно знать, сколько статей новые), `publishedAt` = `isoDate ?? pubDate ?? null`; возвращает
+      количество **новых** статей — это значение попадает в `articlesCount` ответа `POST /sources`
+- [x] написать тесты: новые статьи создаются, повторный вызов с теми же `externalId` не дублирует
+      записи и не увеличивает счётчик (мок Prisma `create` + `P2002`), элемент без `guid`/`link`
+      пропускается, элемент без даты сохраняется с `publishedAt: null`, прочие ошибки пробрасываются
+- [x] run tests - must pass before next task
 
 ### Task 6: `SourcesService` — оркестрация добавления источника
 
