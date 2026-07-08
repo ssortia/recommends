@@ -323,22 +323,22 @@ export type AddSourceInput = z.infer<typeof AddSourceSchema>;
 - Create: `apps/api/src/sources/sources.service.ts`
 - Create: `apps/api/src/sources/sources.service.spec.ts`
 
-- [ ] метод `addSource(userId: string, url: string): Promise<{ source: Source; articlesCount: number }>`
+- [x] метод `addSource(userId: string, url: string): Promise<{ source: Source; articlesCount: number }>`
       реализует поток из Solution Overview: 1. `SourcesRepository.findByUrl(url)` — если `Source` найден: `UserSourcesRepository.exists` →
       при `true` `ConflictException('Источник уже добавлен')` без сетевого запроса; при `false` —
       создать `UserSource` и вернуть `{ source, articlesCount: 0 }` (статьи уже есть от
       первого добавления) 2. если `Source` не найден: `RssGate.fetch(url)`, при `null` —
       `BadRequestException('Не удалось получить RSS-ленту по указанному URL')`; иначе —
       `this.prisma.$transaction(async (tx) => { source = await sourcesRepository.createWithinTransaction(tx, { title: feed.title ?? new URL(url).host, url, type: 'RSS', lastFetchedAt: new Date() }); await userSourcesRepository.create(userId, source.id, tx); articlesCount = await articlesRepository.upsertMany(tx, source.id, feed.items); })`
-- [ ] метод `listForUser(userId: string): Promise<UserSourceWithSource[]>` — обёртка над
+- [x] метод `listForUser(userId: string): Promise<UserSourceWithSource[]>` — обёртка над
       `UserSourcesRepository.findAllByUser`
-- [ ] написать тесты `addSource`: успех (новый Source, транзакция вызвана), успех (существующий
+- [x] написать тесты `addSource`: успех (новый Source, транзакция вызвана), успех (существующий
       Source, другой пользователь, без повторного `RssGate.fetch`), дубликат подписки →
       `ConflictException` (без вызова `RssGate.fetch`), невалидный фид → `BadRequestException`,
       сбой внутри транзакции (например, ошибка `upsertMany`) не оставляет частично созданных
       `Source`/`UserSource` (мок `$transaction`, пробрасывающий ошибку)
-- [ ] написать тесты `listForUser`
-- [ ] run tests - must pass before next task
+- [x] написать тесты `listForUser`
+- [x] run tests - must pass before next task
 
 ### Task 7: `SourcesController` + DTO + `SourcesModule`
 
