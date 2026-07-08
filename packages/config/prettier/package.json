@@ -5,8 +5,8 @@
   "license": "MIT",
   "main": "index.js",
   "devDependencies": {
-    "prettier": "^3.4.2",
-    "prettier-plugin-tailwindcss": "^0.6.11",
+    "prettier": "^3.9.4",
+    "prettier-plugin-tailwindcss": "^0.8.0",
     "prettier-plugin-organize-imports": "^4.1.0"
   }
 }
