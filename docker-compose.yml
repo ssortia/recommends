@@ -1,0 +1,70 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nexst_dev
+    ports:
+      - '5441:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.dev.Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/api/node_modules
+      # Каталоги сборки держим в volume контейнера, чтобы он не писал их на хост от root
+      - /app/apps/api/dist
+      - /app/packages/types/dist
+    ports:
+      - '3001:3001'
+    # Значения ниже имеют приоритет над env_file: фиксируют docker-сетевые адреса
+    # (db:5432 вместо localhost) и дефолты JWT, не зависящие от локального .env.
+    environment:
+      PORT: 3001
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/nexst_dev
+      JWT_SECRET: ${JWT_SECRET:-change-me-jwt-secret-min-32-chars-long}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-me-refresh-secret-min-32-chars}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-15m}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.dev.Dockerfile
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/web/node_modules
+      # Каталоги сборки держим в volume контейнера, чтобы он не писал их на хост от root
+      - /app/apps/web/.next
+      - /app/packages/types/dist
+    ports:
+      - '3000:3000'
+    environment:
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-change-me-nextauth-secret-min-32-chars}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001}
+      API_URL: http://api:3001
+      HOSTNAME: 0.0.0.0
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:

@@ -1,0 +1,12 @@
+{
+  "name": "@repo/prettier-config",
+  "version": "0.0.1",
+  "private": true,
+  "license": "MIT",
+  "main": "index.js",
+  "devDependencies": {
+    "prettier": "^3.4.2",
+    "prettier-plugin-tailwindcss": "^0.6.11",
+    "prettier-plugin-organize-imports": "^4.1.0"
+  }
+}

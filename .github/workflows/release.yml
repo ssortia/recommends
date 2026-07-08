@@ -1,0 +1,92 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-and-push:
+    name: Build & Push Docker Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      version: ${{ steps.version.outputs.tag }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract version tag
+        id: version
+        run: echo "tag=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/api.Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}-api:${{ steps.version.outputs.tag }}
+            ghcr.io/${{ github.repository }}-api:latest
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,scope=api,mode=max
+
+      - name: Build and push Web image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/web.Dockerfile
+          push: true
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+          tags: |
+            ghcr.io/${{ github.repository }}-web:${{ steps.version.outputs.tag }}
+            ghcr.io/${{ github.repository }}-web:latest
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,scope=web,mode=max
+
+  deploy:
+    name: Deploy to Production
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        env:
+          CR_PAT: ${{ secrets.CR_PAT }}
+          ACTOR: ${{ github.actor }}
+          IMAGE_TAG: ${{ needs.build-and-push.outputs.version }}
+          GHCR_IMAGE_PREFIX: ghcr.io/${{ github.repository }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: CR_PAT,ACTOR,IMAGE_TAG,GHCR_IMAGE_PREFIX
+          script: |
+            set -e
+            echo "$CR_PAT" | docker login ghcr.io -u "$ACTOR" --password-stdin
+
+            cd /opt/nexst
+
+            GHCR_IMAGE_PREFIX="$GHCR_IMAGE_PREFIX" IMAGE_TAG="$IMAGE_TAG" \
+              docker compose -f docker-compose.prod.yml pull
+
+            GHCR_IMAGE_PREFIX="$GHCR_IMAGE_PREFIX" IMAGE_TAG="$IMAGE_TAG" \
+              docker compose -f docker-compose.prod.yml up -d --remove-orphans
+
+            docker image prune -f --filter "until=24h"

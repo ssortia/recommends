@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String
+  role          Role     @default(USER)
+  emailVerified Boolean  @default(false)
+  refreshToken  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  verificationTokens VerificationToken[]
+
+  @@index([role])
+  @@index([createdAt])
+  @@map("users")
+}
+
+enum VerificationTokenType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
+model VerificationToken {
+  id        String                @id @default(cuid())
+  userId    String
+  user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      VerificationTokenType
+  // храним только sha256-хэш токена, plain-токен уходит пользователю в письме
+  tokenHash String                @unique
+  expiresAt DateTime
+  createdAt DateTime              @default(now())
+
+  @@index([userId, type])
+  @@map("verification_tokens")
+}
+
+// Значения зеркалят Zod-схему AuditEventSchema в @repo/types (source of truth).
+// Prisma-enum не может импортировать из пакета, поэтому список сверяется вручную.
+enum AuditEvent {
+  LOGIN_SUCCESS
+  LOGIN_FAILED
+  LOGOUT
+  USER_ROLE_CHANGED
+  EMAIL_VERIFIED
+  PASSWORD_RESET_REQUESTED
+  PASSWORD_RESET_COMPLETED
+}
+
+model AuditLog {
+  id         String     @id @default(cuid())
+  event      AuditEvent
+  success    Boolean    @default(true)
+  // actorId/targetId без FK на User: журнал переживает удаление пользователя
+  actorId    String?
+  actorEmail String? // денормализованный email актора для отображения без join
+  targetId   String?
+  targetType String? // тип целевой сущности ("User")
+  metadata   Json? // только whitelisted поля (без паролей/токенов)
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime   @default(now())
+
+  @@index([createdAt])
+  @@index([event])
+  @@index([actorId])
+  @@map("audit_logs")
+}

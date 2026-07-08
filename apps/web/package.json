@@ -1,0 +1,53 @@
+{
+  "name": "@repo/web",
+  "version": "0.0.1",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "dev": "next dev --turbopack --port 3000",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.10.0",
+    "@radix-ui/react-label": "^2.1.1",
+    "@repo/types": "workspace:*",
+    "@repo/utils": "workspace:*",
+    "@ssortia/shadcn-zod-bridge": "^0.1.0",
+    "@t3-oss/env-nextjs": "^0.13.10",
+    "@tanstack/react-query": "^5.66.0",
+    "@tanstack/react-table": "^8.21.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.475.0",
+    "next": "^15.1.6",
+    "next-auth": "5.0.0-beta.25",
+    "next-themes": "^0.4.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.2",
+    "react-markdown": "^9.0.3",
+    "remark-gfm": "^4.0.1",
+    "tailwind-merge": "^2.6.0",
+    "zod": "^4.3.6",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@playwright/test": "^1.60.0",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@tailwindcss/postcss": "^4.0.3",
+    "@tanstack/react-query-devtools": "^5.66.0",
+    "@types/node": "^22.12.0",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "eslint": "^9.18.0",
+    "postcss": "^8.5.1",
+    "tailwindcss": "^4.0.3",
+    "typescript": "^5.7.3"
+  }
+}
