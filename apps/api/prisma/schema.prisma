@@ -23,6 +23,7 @@ model User {
   updatedAt     DateTime @updatedAt
 
   verificationTokens VerificationToken[]
+  userSources        UserSource[]
 
   @@index([role])
   @@index([createdAt])
@@ -78,4 +79,56 @@ model AuditLog {
   @@index([event])
   @@index([actorId])
   @@map("audit_logs")
+}
+
+enum SourceType {
+  RSS
+}
+
+// Глобальный справочник источников — один фетчер на URL, переиспользуется всеми подписчиками.
+model Source {
+  id            String     @id @default(cuid())
+  type          SourceType
+  url           String     @unique
+  // Часть фидов не отдаёт <title> канала — fallback на хост URL в SourcesService.
+  title         String
+  lastFetchedAt DateTime?
+  createdAt     DateTime   @default(now())
+
+  subscriptions UserSource[]
+  articles      Article[]
+
+  @@map("sources")
+}
+
+// Подписка пользователя на источник. Составной ключ вместо id — подписка не существует
+// без обеих сторон, отдельный идентификатор не нужен.
+model UserSource {
+  userId    String
+  sourceId  String
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@id([userId, sourceId])
+  @@map("user_sources")
+}
+
+model Article {
+  id         String   @id @default(cuid())
+  sourceId   String
+  // guid ?? link из фида — дедупликация статей одного источника при повторном парсинге.
+  externalId String
+  title      String
+  url        String
+  // Nullable: у многих RSS/Atom-элементов нет pubDate/isoDate.
+  publishedAt DateTime?
+  fetchedAt  DateTime @default(now())
+
+  source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceId, externalId])
+  @@index([publishedAt])
+  @@map("articles")
 }

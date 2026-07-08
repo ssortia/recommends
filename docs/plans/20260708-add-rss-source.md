@@ -234,13 +234,13 @@ export type AddSourceInput = z.infer<typeof AddSourceSchema>;
 - Modify: `apps/api/prisma/schema.prisma`
 - Create: `apps/api/prisma/migrations/<timestamp>_add_sources/migration.sql` (генерируется)
 
-- [ ] добавить `enum SourceType { RSS }`, модели `Source`, `UserSource`, `Article` в
+- [x] добавить `enum SourceType { RSS }`, модели `Source`, `UserSource`, `Article` в
       `schema.prisma` по разделу Technical Details
-- [ ] добавить обратную связь `userSources UserSource[]` в модель `User`
-- [ ] сгенерировать миграцию: `pnpm --filter @repo/api db:migrate` (имя `add_sources`)
-- [ ] сгенерировать Prisma Client: `pnpm --filter @repo/api db:generate`
-- [ ] проверить, что миграция применяется на чистой БД без ошибок (`docker compose down -v && docker compose up -d db && pnpm --filter @repo/api db:migrate`)
-- [ ] run tests - must pass before next task (`pnpm --filter @repo/api test` — существующие тесты не должны сломаться)
+- [x] добавить обратную связь `userSources UserSource[]` в модель `User`
+- [x] сгенерировать миграцию: `pnpm --filter @repo/api db:migrate` (имя `add_sources`)
+- [x] сгенерировать Prisma Client: `pnpm --filter @repo/api db:generate`
+- [x] проверить, что миграция применяется на чистой БД без ошибок (`docker compose down -v && docker compose up -d db && pnpm --filter @repo/api db:migrate`)
+- [x] run tests - must pass before next task (`pnpm --filter @repo/api test` — существующие тесты не должны сломаться)
 
 ### Task 2: Zod-схемы источников в `@repo/types`
 
@@ -250,12 +250,12 @@ export type AddSourceInput = z.infer<typeof AddSourceSchema>;
 - Create: `packages/types/src/sources.spec.ts`
 - Modify: `packages/types/src/index.ts`
 
-- [ ] создать `AddSourceSchema`, `SourceSchema` и производные типы в `packages/types/src/sources.ts`
+- [x] создать `AddSourceSchema`, `SourceSchema` и производные типы в `packages/types/src/sources.ts`
       (см. Technical Details)
-- [ ] добавить `export * from './sources'` в `packages/types/src/index.ts`
-- [ ] написать тесты валидации `AddSourceSchema` (валидный URL / невалидный URL / пустая строка)
-- [ ] написать тесты структуры `SourceSchema` (успешный parse валидного объекта)
-- [ ] run tests - must pass before next task (`pnpm --filter @repo/types test`)
+- [x] добавить `export * from './sources'` в `packages/types/src/index.ts`
+- [x] написать тесты валидации `AddSourceSchema` (валидный URL / невалидный URL / пустая строка)
+- [x] написать тесты структуры `SourceSchema` (успешный parse валидного объекта)
+- [x] run tests - must pass before next task (`pnpm --filter @repo/types test`)
 
 ### Task 3: `RssGate` — валидация и парсинг RSS/Atom-ленты
 
