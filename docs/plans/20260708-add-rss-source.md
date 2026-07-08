@@ -265,14 +265,14 @@ export type AddSourceInput = z.infer<typeof AddSourceSchema>;
 - Create: `apps/api/src/sources/rss.gate.spec.ts`
 - Modify: `apps/api/package.json` (добавить зависимость `rss-parser`)
 
-- [ ] установить `rss-parser`: `pnpm --filter @repo/api add rss-parser`
-- [ ] создать `RssGate` с методом `fetch(url: string): Promise<{ title: string; items: RssItem[] } | null>`
+- [x] установить `rss-parser`: `pnpm --filter @repo/api add rss-parser`
+- [x] создать `RssGate` с методом `fetch(url: string): Promise<{ title: string; items: RssItem[] } | null>`
       — оборачивает `Parser.parseURL`, ловит сетевые/парсинг-ошибки, возвращает `null` вместо throw
       (по конвенции Gate из `docs/adr/009-gate-layer.md`)
-- [ ] `RssItem` содержит поля, нужные для `Article`: `title`, `link`, `guid`, `isoDate`/`pubDate`
-- [ ] написать тесты: успешный парсинг (мок `Parser.parseURL`), сетевая ошибка → `null`,
+- [x] `RssItem` содержит поля, нужные для `Article`: `title`, `link`, `guid`, `isoDate`/`pubDate`
+- [x] написать тесты: успешный парсинг (мок `Parser.parseURL`), сетевая ошибка → `null`,
       невалидный XML → `null`
-- [ ] run tests - must pass before next task
+- [x] run tests - must pass before next task
 
 ### Task 4: `SourcesRepository` и `UserSourcesRepository`
 
