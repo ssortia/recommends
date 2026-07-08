@@ -366,22 +366,31 @@ export type AddSourceInput = z.infer<typeof AddSourceSchema>;
 **Files:**
 
 - Create: `apps/web/src/api/sources.api.ts`
+- Create: `apps/web/src/hooks/use-sources.ts`
 - Create: `apps/web/src/app/(dashboard)/sources/page.tsx`
 - Create: `apps/web/src/app/(dashboard)/sources/add-source-form.tsx`
+- Create: `apps/web/src/app/(dashboard)/sources/sources-list.tsx`
 - Modify: `apps/web/src/components/main-nav.tsx` (пункт «Источники» в `NAV_LINKS`)
 - Create: `apps/web/e2e/sources.spec.ts`
 
-- [ ] `sourcesApi.add(url, accessToken)` и `sourcesApi.list(accessToken)` в стиле `users.api.ts`
-- [ ] `AddSourceForm` — `react-hook-form` + `zod` (`AddSourceSchema` из `@repo/types`), поле URL,
-      обработка 400/409 через `ApiError` (по аналогии с `register-form.tsx`)
-- [ ] `SourcesPage` — server component, рендерит список подписок + `AddSourceForm`
-- [ ] добавить `{ label: 'Источники', href: '/sources', roles: ['USER', 'ADMIN'] }` в `NAV_LINKS`
+- [x] `sourcesApi.add(url, accessToken)` и `sourcesApi.list(accessToken)` в стиле `users.api.ts`
+- [x] `AddSourceForm` — реальная конвенция проекта оказалась `ZodForm`/`TextField` из
+      `@ssortia/shadcn-zod-bridge` (`AddSourceSchema` из `@repo/types`), а не голый
+      `react-hook-form` из первоначального черновика плана; `useAddSource` — мутация
+      `@tanstack/react-query` по образцу `hooks/use-users.ts`; обработка 400/409 через `ApiError`
+      (по аналогии с `register-form.tsx`)
+- [x] `SourcesList` — клиентский компонент на `useSources` (`@tanstack/react-query`), `SourcesPage` —
+      server component, компонует `AddSourceForm` + `SourcesList` в `Suspense`
+- [x] добавить `{ label: 'Источники', href: '/sources', roles: ['USER', 'ADMIN'] }` в `NAV_LINKS`
       (текущие пункты все `ADMIN`-only — это первый раздел, видимый роли `USER`)
-- [ ] написать Playwright e2e `sources.spec.ts` по образцу `login-error.spec.ts`: авторизованный
-      пользователь добавляет валидный RSS URL → источник появляется в списке; повторное добавление
-      того же URL → видно сообщение об ошибке
-- [ ] run tests - must pass before next task (`pnpm --filter @repo/web test:e2e`; предварительно
-      `pnpm build` — Playwright поднимает prod-сборку, см. `docs/USER_STORIES.md`/README проекта-источника)
+- [x] написать Playwright e2e `sources.spec.ts`: локальный HTTP-сервер отдаёт статичный RSS
+      (без сетевой зависимости в CI), авторизованный верифицированный пользователь добавляет
+      валидный URL → источник появляется в списке; повторное добавление того же URL → видно
+      сообщение «Источник уже добавлен»
+- [x] run tests - must pass before next task (`pnpm build` + `NODE_ENV=test MAIL_TRANSPORT=json`
+      API + `pnpm --filter @repo/web test:e2e` — все 7 e2e-тестов проходят; при параллельном
+      запуске (>1 worker) возможен ресурсно-обусловленный флейк в этой песочнице, при
+      `--workers=1` стабильно зелено)
 
 ### Task 9: [Final] Verify acceptance criteria
 

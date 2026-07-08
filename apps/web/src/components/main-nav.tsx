@@ -11,6 +11,7 @@ interface NavLink {
 
 // Единый источник пунктов навигации. Новый раздел — одна строка здесь.
 const NAV_LINKS: NavLink[] = [
+  { label: 'Источники', href: '/sources', roles: ['USER', 'ADMIN'] },
   { label: 'Пользователи', href: '/admin/users', roles: ['ADMIN'] },
   { label: 'Аудит', href: '/admin/audit', roles: ['ADMIN'] },
   { label: 'Документация', href: '/admin/docs', roles: ['ADMIN'] },
