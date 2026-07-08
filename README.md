@@ -1,6 +1,16 @@
-# NexST Template
+# Curio
 
-Продакшен-готовый монорепо-шаблон для полностековых проектов на **NestJS + Next.js**.
+Персональный RSS-агрегатор с AI-фильтрацией новостей.
+
+Сервис собирает материалы из RSS-лент и Telegram-каналов, оценивает каждую статью на соответствие
+интересам пользователя с помощью LLM (Groq) и формирует персональный RSS-фид из релевантных
+новостей. Результат можно читать в любом RSS-ридере.
+
+Подробное продуктовое описание — [docs/PRODUCT.md](./docs/PRODUCT.md), пользовательские сценарии —
+[docs/USER_STORIES.md](./docs/USER_STORIES.md).
+
+Построен на основе [NexST Template](https://github.com/ssortia) — продакшен-готового монорепо-шаблона
+на **NestJS + Next.js**.
 
 ---
 
@@ -128,16 +138,18 @@ docker compose down                         # остановить
 
 ## Документация
 
-| Документ                                                                                                       | Описание                               |
-| -------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| [docs/DOCUMENTATION.md](./docs/DOCUMENTATION.md)                                                               | Правила ведения документации в проекте |
-| [docs/guides/getting-started.md](./docs/guides/getting-started.md)                                             | Локальная установка шаг за шагом       |
-| [docs/guides/development.md](./docs/guides/development.md)                                                     | Ежедневный workflow разработчика       |
-| [docs/guides/adding-a-module.md](./docs/guides/adding-a-module.md)                                             | Добавление новой бизнес-сущности       |
-| [docs/guides/email-verification-and-password-reset.md](./docs/guides/email-verification-and-password-reset.md) | Верификация email и сброс пароля       |
-| [docs/guides/deployment.md](./docs/guides/deployment.md)                                                       | Деплой в продакшен                     |
-| [docs/adr/](./docs/adr/)                                                                                       | Архитектурные решения (ADR)            |
-| [CLAUDE.md](./CLAUDE.md)                                                                                       | Инструкции для AI-ассистента           |
+| Документ                                                                                                       | Описание                                 |
+| -------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| [docs/PRODUCT.md](./docs/PRODUCT.md)                                                                           | Продуктовое описание сервиса             |
+| [docs/USER_STORIES.md](./docs/USER_STORIES.md)                                                                 | Пользовательские сценарии (user stories) |
+| [docs/DOCUMENTATION.md](./docs/DOCUMENTATION.md)                                                               | Правила ведения документации в проекте   |
+| [docs/guides/getting-started.md](./docs/guides/getting-started.md)                                             | Локальная установка шаг за шагом         |
+| [docs/guides/development.md](./docs/guides/development.md)                                                     | Ежедневный workflow разработчика         |
+| [docs/guides/adding-a-module.md](./docs/guides/adding-a-module.md)                                             | Добавление новой бизнес-сущности         |
+| [docs/guides/email-verification-and-password-reset.md](./docs/guides/email-verification-and-password-reset.md) | Верификация email и сброс пароля         |
+| [docs/guides/deployment.md](./docs/guides/deployment.md)                                                       | Деплой в продакшен                       |
+| [docs/adr/README.md](./docs/adr/README.md)                                                                     | Архитектурные решения (ADR)              |
+| [CLAUDE.md](./CLAUDE.md)                                                                                       | Инструкции для AI-ассистента             |
 
 ---
 
