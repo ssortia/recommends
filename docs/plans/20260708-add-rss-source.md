@@ -283,20 +283,20 @@ export type AddSourceInput = z.infer<typeof AddSourceSchema>;
 - Create: `apps/api/src/sources/user-sources.repository.ts`
 - Create: `apps/api/src/sources/user-sources.repository.spec.ts`
 
-- [ ] `SourcesRepository extends BaseRepository<Source, Prisma.SourceCreateInput, Prisma.SourceUpdateInput>`
+- [x] `SourcesRepository extends BaseRepository<Source, Prisma.SourceCreateInput, Prisma.SourceUpdateInput>`
       с методами `findByUrl(url: string): Promise<Source | null>` и
       `createWithinTransaction(tx: Prisma.TransactionClient, data: Prisma.SourceCreateInput): Promise<Source>`
       (создание внутри `$transaction` из `SourcesService.addSource`, отдельно от унаследованного
       `create`, который работает через `this.prisma`; `data` включает `lastFetchedAt: new Date()` —
       отдельного tx-aware метода обновления не заводим, значение известно уже на момент создания,
       т.к. `RssGate.fetch` к этому шагу уже отработал)
-- [ ] `UserSourcesRepository` (без `BaseRepository` — составной ключ) с методами
+- [x] `UserSourcesRepository` (без `BaseRepository` — составной ключ) с методами
       `exists(userId, sourceId): Promise<boolean>`,
       `create(userId, sourceId, tx?: Prisma.TransactionClient): Promise<UserSource>`,
       `findAllByUser(userId): Promise<(UserSource & { source: Source })[]>`
-- [ ] написать тесты `SourcesRepository.findByUrl` (найден / не найден) и `create` через мок Prisma
-- [ ] написать тесты `UserSourcesRepository.exists` / `create` / `findAllByUser` через мок Prisma
-- [ ] run tests - must pass before next task
+- [x] написать тесты `SourcesRepository.findByUrl` (найден / не найден) и `create` через мок Prisma
+- [x] написать тесты `UserSourcesRepository.exists` / `create` / `findAllByUser` через мок Prisma
+- [x] run tests - must pass before next task
 
 ### Task 5: `ArticlesRepository` и первичное сохранение статей
 
