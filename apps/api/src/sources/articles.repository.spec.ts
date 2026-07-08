@@ -1,8 +1,7 @@
 import { Prisma } from '@prisma/client';
 
-import type { RssItem } from './rss.gate';
-
 import { ArticlesRepository } from './articles.repository';
+import type { RssItem } from './rss.gate';
 
 function duplicateError(): Prisma.PrismaClientKnownRequestError {
   return new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {

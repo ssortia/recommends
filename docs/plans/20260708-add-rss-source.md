@@ -351,16 +351,15 @@ export type AddSourceInput = z.infer<typeof AddSourceSchema>;
 - Create: `apps/api/src/sources/sources.module.ts`
 - Modify: `apps/api/src/app.module.ts`
 
-- [ ] `AddSourceDto` с `class-validator` (`@IsUrl()`) — не дублировать вручную правило из
-      `AddSourceSchema`, но синхронизировать сообщение об ошибке
-- [ ] `SourceResponseDto` с полями `Source` + `articlesCount`
-- [ ] `SourcesController`: `POST /sources` (`JwtAuthGuard, VerifiedGuard`, `@CurrentUser()`),
+- [x] `AddSourceDto` с `class-validator` (`@IsUrl()`)
+- [x] `SourceDto`/`AddSourceResponseDto`/`UserSourceResponseDto` с полями `Source` + `articlesCount`
+- [x] `SourcesController`: `POST /sources` (`JwtAuthGuard, VerifiedGuard`, `@CurrentUser()`),
       `GET /sources` (список подписок текущего пользователя), Swagger-аннотации по образцу
       `UsersController`
-- [ ] зарегистрировать `SourcesModule` (controller + оба репозитория + сервис + gate) в `app.module.ts`
-- [ ] написать тесты контроллера: `POST /sources` успех/400/409, `GET /sources` возвращает список
+- [x] зарегистрировать `SourcesModule` (controller + оба репозитория + сервис + gate) в `app.module.ts`
+- [x] написать тесты контроллера: `POST /sources` успех/400/409, `GET /sources` возвращает список
       (мок `SourcesService`)
-- [ ] run tests - must pass before next task
+- [x] run tests - must pass before next task
 
 ### Task 8: Web — API-клиент, страница `/sources` и e2e
 

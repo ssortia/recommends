@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { DocsModule } from './docs/docs.module';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { SourcesModule } from './sources/sources.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -24,6 +25,7 @@ import { UsersModule } from './users/users.module';
     AuditModule,
     DocsModule,
     HealthModule,
+    SourcesModule,
   ],
 })
 export class AppModule {}
