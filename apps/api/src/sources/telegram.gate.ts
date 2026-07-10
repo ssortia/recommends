@@ -23,7 +23,9 @@ export class TelegramGate {
   private readonly logger = new Logger(TelegramGate.name);
 
   async fetch(username: string): Promise<TelegramFeed | null> {
-    const baseUrl = getEnv().TELEGRAM_PREVIEW_BASE_URL;
+    // Убираем завершающий слэш — иначе при TELEGRAM_PREVIEW_BASE_URL с `/` на конце
+    // получится URL с двойным слэшем.
+    const baseUrl = getEnv().TELEGRAM_PREVIEW_BASE_URL.replace(/\/+$/, '');
     const url = `${baseUrl}/s/${username}`;
 
     try {
@@ -47,7 +49,11 @@ export class TelegramGate {
         .map((_, el) => {
           const $el = $(el);
           const guid = $el.attr('data-post');
-          const text = $el.find('.tgme_widget_message_text').first().text().trim();
+          // Заменяем <br> на пробел перед извлечением текста — иначе многострочный
+          // пост схлопывается в слитную строку без разделителей между строками.
+          const $text = $el.find('.tgme_widget_message_text').first();
+          $text.find('br').replaceWith(' ');
+          const text = $text.text().trim();
           const isoDate = $el.find('time').first().attr('datetime');
 
           return {

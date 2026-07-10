@@ -37,6 +37,13 @@ describe('parseSourceInput', () => {
       expect(fromAt).toEqual({ type: 'TELEGRAM', username: 'username' });
       expect(fromLink).toEqual({ type: 'TELEGRAM', username: 'username' });
     });
+
+    it('распознаёт домен в верхнем регистре: https://T.me/channel', () => {
+      expect(parseSourceInput('https://T.me/channel')).toEqual({
+        type: 'TELEGRAM',
+        username: 'channel',
+      });
+    });
   });
 
   describe('RSS', () => {
@@ -64,14 +71,20 @@ describe('parseSourceInput', () => {
       expect(parseSourceInput('   ')).toBeNull();
     });
 
-    it('t.me/joinchat/xxx → не Telegram-матч (служебный путь, не URL)', () => {
-      const result = parseSourceInput('t.me/joinchat/xxx');
-      expect(result?.type).not.toBe('TELEGRAM');
+    it('t.me/joinchat/xxx → null (служебный путь, без протокола — не URL и не канал)', () => {
+      expect(parseSourceInput('t.me/joinchat/xxx')).toBeNull();
     });
 
-    it('t.me/s/username → не Telegram-матч (служебный путь, не URL)', () => {
-      const result = parseSourceInput('t.me/s/username');
-      expect(result?.type).not.toBe('TELEGRAM');
+    it('t.me/s/username → null (служебный путь, без протокола — не URL и не канал)', () => {
+      expect(parseSourceInput('t.me/s/username')).toBeNull();
+    });
+
+    it('https://t.me/s/username → null, а не ложный RSS-матч (служебный preview-путь)', () => {
+      expect(parseSourceInput('https://t.me/s/username')).toBeNull();
+    });
+
+    it('https://t.me/joinchat/xxx → null, а не ложный RSS-матч', () => {
+      expect(parseSourceInput('https://t.me/joinchat/xxx')).toBeNull();
     });
 
     it('txme/username → null, не ложный Telegram-матч', () => {
@@ -92,9 +105,20 @@ describe('parseSourceInput', () => {
       expect(parseSourceInput(`@${longUsername}`)).toBeNull();
     });
 
-    it('t.me/addstickers/pack → не Telegram-матч (служебный путь, не URL)', () => {
-      const result = parseSourceInput('t.me/addstickers/pack');
-      expect(result?.type).not.toBe('TELEGRAM');
+    it('t.me/addstickers/pack → null (служебный путь, без протокола — не URL и не канал)', () => {
+      expect(parseSourceInput('t.me/addstickers/pack')).toBeNull();
+    });
+
+    it('username с ведущей цифрой → null (реальные Telegram-username начинаются с буквы)', () => {
+      expect(parseSourceInput('@1channel')).toBeNull();
+    });
+
+    it('не-http(s) протокол (ftp://) → null', () => {
+      expect(parseSourceInput('ftp://example.com/feed.xml')).toBeNull();
+    });
+
+    it('не-http(s) протокол (mailto:) → null', () => {
+      expect(parseSourceInput('mailto:foo@bar.com')).toBeNull();
     });
   });
 });

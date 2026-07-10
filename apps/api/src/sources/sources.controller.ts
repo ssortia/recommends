@@ -18,7 +18,10 @@ export class SourcesController {
   constructor(private sourcesService: SourcesService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Add an RSS/Atom source by URL and subscribe the current user' })
+  @ApiOperation({
+    summary:
+      'Add an RSS/Atom source by URL or a Telegram channel by @username/link, and subscribe the current user',
+  })
   @ApiOkResponse({ type: AddSourceResponseDto })
   async addSource(@Body() dto: AddSourceDto, @CurrentUser() user: User) {
     return this.sourcesService.addSource(user.id, dto.url);
