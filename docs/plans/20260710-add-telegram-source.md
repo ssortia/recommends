@@ -185,10 +185,10 @@ export class TelegramGate {
 - Modify: `apps/api/prisma/schema.prisma`
 - Create: `apps/api/prisma/migrations/<timestamp>_add_telegram_source_type/migration.sql` (генерируется)
 
-- [ ] добавить `TELEGRAM` в enum `SourceType` в `schema.prisma`
-- [ ] сгенерировать миграцию: `pnpm --filter @repo/api db:migrate`
-- [ ] сгенерировать Prisma Client: `pnpm --filter @repo/api db:generate`
-- [ ] запустить полный набор тестов API — убедиться, что существующие тесты не сломались:
+- [x] добавить `TELEGRAM` в enum `SourceType` в `schema.prisma`
+- [x] сгенерировать миграцию: `pnpm --filter @repo/api db:migrate`
+- [x] сгенерировать Prisma Client: `pnpm --filter @repo/api db:generate`
+- [x] запустить полный набор тестов API — убедиться, что существующие тесты не сломались:
       `pnpm --filter @repo/api test`
 
 ### Task 2: Обобщить `RssItem` → `FeedItem`, обновить `ArticlesRepository`
@@ -216,7 +216,7 @@ export class TelegramGate {
 
 - [ ] реализовать `parseSourceInput(input: string): ParsedSourceInput | null`: `@username` и
       анкорированный `^(https?:\/\/)?t\.me\/([a-zA-Z0-9_]{5,32})\/?$` → `{ type: 'TELEGRAM',
-    username: username.toLowerCase() }`, валидный `http(s)://` URL → `{ type: 'RSS', url }`,
+  username: username.toLowerCase() }`, валидный `http(s)://` URL → `{ type: 'RSS', url }`,
       иначе `null`
 - [ ] написать тесты: `@username`, `t.me/username`, `https://t.me/username`, обычный RSS URL
 - [ ] написать тест на нормализацию регистра: `@Username` и `t.me/USERNAME` дают одинаковый
