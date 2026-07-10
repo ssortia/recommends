@@ -6,8 +6,18 @@ describe('sources schemas', () => {
     expect(AddSourceSchema.parse(input)).toEqual(input);
   });
 
-  it('AddSourceSchema падает на невалидном URL', () => {
-    expect(() => AddSourceSchema.parse({ url: 'not-a-url' })).toThrow();
+  it('AddSourceSchema принимает @username Telegram-канала', () => {
+    const input = { url: '@channel' };
+    expect(AddSourceSchema.parse(input)).toEqual(input);
+  });
+
+  it('AddSourceSchema принимает t.me/username', () => {
+    const input = { url: 't.me/channel' };
+    expect(AddSourceSchema.parse(input)).toEqual(input);
+  });
+
+  it('AddSourceSchema принимает произвольную непустую строку (формат проверяется на бэкенде)', () => {
+    expect(() => AddSourceSchema.parse({ url: 'not-a-url' })).not.toThrow();
   });
 
   it('AddSourceSchema падает на пустой строке', () => {
@@ -38,10 +48,22 @@ describe('sources schemas', () => {
     expect(SourceSchema.parse(source).lastFetchedAt).toBeNull();
   });
 
-  it('SourceSchema падает при неизвестном type', () => {
+  it('SourceSchema принимает type: TELEGRAM', () => {
     const source = {
       id: 'src_1',
       type: 'TELEGRAM',
+      url: 'https://t.me/channel',
+      title: '@channel',
+      lastFetchedAt: null,
+      createdAt: new Date().toISOString(),
+    };
+    expect(SourceSchema.parse(source)).toMatchObject({ type: 'TELEGRAM' });
+  });
+
+  it('SourceSchema падает при неизвестном type', () => {
+    const source = {
+      id: 'src_1',
+      type: 'UNKNOWN',
       url: 'https://example.com/feed.xml',
       title: 'Example Feed',
       lastFetchedAt: null,

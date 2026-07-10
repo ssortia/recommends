@@ -284,11 +284,11 @@ username: username.toLowerCase() }`, валидный `http(s)://` URL → `{ ty
 - Modify: `packages/types/src/sources.ts`
 - Modify: `packages/types/src/sources.spec.ts`
 
-- [ ] `SourceTypeSchema`: `z.enum(['RSS', 'TELEGRAM'])`
-- [ ] `AddSourceSchema`: `url: z.string().url()` → `url: z.string().min(1)`
-- [ ] обновить/добавить тесты: валидация `@username`, `t.me/...`, RSS URL, пустой строки,
+- [x] `SourceTypeSchema`: `z.enum(['RSS', 'TELEGRAM'])`
+- [x] `AddSourceSchema`: `url: z.string().url()` → `url: z.string().min(1)`
+- [x] обновить/добавить тесты: валидация `@username`, `t.me/...`, RSS URL, пустой строки,
       `SourceSchema` с `type: 'TELEGRAM'`
-- [ ] запустить тесты: `pnpm --filter @repo/types test`
+- [x] запустить тесты: `pnpm --filter @repo/types test`
 
 ### Task 8: Web — обновить форму добавления источника
 

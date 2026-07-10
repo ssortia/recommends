@@ -1,10 +1,11 @@
 import { z } from 'zod';
 
-export const SourceTypeSchema = z.enum(['RSS']);
+export const SourceTypeSchema = z.enum(['RSS', 'TELEGRAM']);
 export type SourceType = z.infer<typeof SourceTypeSchema>;
 
 export const AddSourceSchema = z.object({
-  url: z.string().url(),
+  // формат (RSS-URL или @username/ссылка на Telegram-канал) валидируется на бэкенде через SourceInputParser
+  url: z.string().min(1),
 });
 
 export type AddSourceInput = z.infer<typeof AddSourceSchema>;
