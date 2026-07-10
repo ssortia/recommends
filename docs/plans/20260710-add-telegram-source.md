@@ -234,9 +234,9 @@ username: username.toLowerCase() }`, валидный `http(s)://` URL → `{ ty
 - Modify: `apps/api/src/config/env.ts`
 - Modify: `.env.example`
 
-- [ ] добавить `TELEGRAM_PREVIEW_BASE_URL: z.string().url().default('https://t.me')` в `envSchema`
-- [ ] добавить переменную с комментарием в `.env.example`
-- [ ] запустить тесты: `pnpm --filter @repo/api test`
+- [x] добавить `TELEGRAM_PREVIEW_BASE_URL: z.string().url().default('https://t.me')` в `envSchema`
+- [x] добавить переменную с комментарием в `.env.example`
+- [x] запустить тесты: `pnpm --filter @repo/api test`
 
 ### Task 5: `TelegramGate` — HTTP-scraping публичного канала
 

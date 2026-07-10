@@ -29,6 +29,9 @@ const envSchema = z
     // TTL одноразовых токенов email-флоу.
     EMAIL_VERIFICATION_TTL: durationSchema.default('24h'),
     PASSWORD_RESET_TTL: durationSchema.default('1h'),
+
+    // Базовый URL публичной preview-страницы Telegram (t.me/s/<username>).
+    TELEGRAM_PREVIEW_BASE_URL: z.string().url().default('https://t.me'),
   })
   .superRefine((env, ctx) => {
     // При реальном SMTP-транспорте поля подключения обязательны.
