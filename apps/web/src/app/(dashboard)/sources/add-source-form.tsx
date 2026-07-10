@@ -23,7 +23,7 @@ export function AddSourceForm() {
       if (err instanceof ApiError && err.status === 409) {
         setServerError('Источник уже добавлен');
       } else if (err instanceof ApiError && err.status === 400) {
-        setServerError('Не удалось получить RSS-ленту по указанному URL');
+        setServerError('Не удалось добавить источник: проверьте формат ссылки или имени канала');
       } else {
         setServerError('Не удалось добавить источник');
       }
@@ -35,8 +35,8 @@ export function AddSourceForm() {
       <div className="flex-1">
         <TextField
           name="url"
-          label="URL RSS-ленты"
-          placeholder="https://example.com/feed.xml"
+          label="Источник"
+          placeholder="https://example.com/feed.xml или @channel"
           required
         />
         {serverError && <p className="text-destructive mt-2 text-sm">{serverError}</p>}

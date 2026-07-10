@@ -65,7 +65,7 @@ test.describe('Добавление RSS-источника', () => {
     await loginAsVerifiedUser(page);
 
     await page.goto('/sources');
-    await page.getByLabel('URL RSS-ленты').fill(feedUrl);
+    await page.getByLabel('Источник').fill(feedUrl);
     await page.getByRole('button', { name: 'Добавить' }).click();
 
     await expect(page.getByText('E2E Test Feed')).toBeVisible();
@@ -75,11 +75,11 @@ test.describe('Добавление RSS-источника', () => {
     await loginAsVerifiedUser(page);
 
     await page.goto('/sources');
-    await page.getByLabel('URL RSS-ленты').fill(feedUrl);
+    await page.getByLabel('Источник').fill(feedUrl);
     await page.getByRole('button', { name: 'Добавить' }).click();
     await expect(page.getByText('E2E Test Feed')).toBeVisible();
 
-    await page.getByLabel('URL RSS-ленты').fill(feedUrl);
+    await page.getByLabel('Источник').fill(feedUrl);
     await page.getByRole('button', { name: 'Добавить' }).click();
 
     await expect(page.getByText('Источник уже добавлен')).toBeVisible();
