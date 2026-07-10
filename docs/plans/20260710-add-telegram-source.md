@@ -214,18 +214,18 @@ export class TelegramGate {
 - Create: `apps/api/src/sources/source-input.parser.ts`
 - Create: `apps/api/src/sources/source-input.parser.spec.ts`
 
-- [ ] реализовать `parseSourceInput(input: string): ParsedSourceInput | null`: `@username` и
+- [x] реализовать `parseSourceInput(input: string): ParsedSourceInput | null`: `@username` и
       анкорированный `^(https?:\/\/)?t\.me\/([a-zA-Z0-9_]{5,32})\/?$` → `{ type: 'TELEGRAM',
 username: username.toLowerCase() }`, валидный `http(s)://` URL → `{ type: 'RSS', url }`,
       иначе `null`
-- [ ] написать тесты: `@username`, `t.me/username`, `https://t.me/username`, обычный RSS URL
-- [ ] написать тест на нормализацию регистра: `@Username` и `t.me/USERNAME` дают одинаковый
+- [x] написать тесты: `@username`, `t.me/username`, `https://t.me/username`, обычный RSS URL
+- [x] написать тест на нормализацию регистра: `@Username` и `t.me/USERNAME` дают одинаковый
       `username` в нижнем регистре
-- [ ] написать тесты на невалидный ввод: пустая строка, `t.me/joinchat/xxx`, `t.me/s/username`,
+- [x] написать тесты на невалидный ввод: пустая строка, `t.me/joinchat/xxx`, `t.me/s/username`,
       RSS-URL с `/t.me/` в пути (например, `https://example.com/t.me/foo`), `txme/username`,
       случайный текст, слишком короткое/длинное имя — все должны вернуть либо `null`, либо (для
       RSS-подобных случаев) `{ type: 'RSS', url }`, но никогда ложный `TELEGRAM`-матч
-- [ ] запустить тесты: `pnpm --filter @repo/api test`
+- [x] запустить тесты: `pnpm --filter @repo/api test`
 
 ### Task 4: `TELEGRAM_PREVIEW_BASE_URL` в конфиге окружения
 
