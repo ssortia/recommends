@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
-import type { RssItem } from './rss.gate';
+import type { FeedItem } from './feed-item.interface';
 
 @Injectable()
 export class ArticlesRepository {
@@ -11,7 +11,7 @@ export class ArticlesRepository {
   async upsertMany(
     tx: Prisma.TransactionClient,
     sourceId: string,
-    items: RssItem[],
+    items: FeedItem[],
   ): Promise<number> {
     let newCount = 0;
 

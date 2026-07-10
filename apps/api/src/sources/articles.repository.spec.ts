@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 
 import { ArticlesRepository } from './articles.repository';
-import type { RssItem } from './rss.gate';
+import type { FeedItem } from './feed-item.interface';
 
 function duplicateError(): Prisma.PrismaClientKnownRequestError {
   return new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
@@ -21,7 +21,7 @@ describe('ArticlesRepository', () => {
 
   it('создаёт новые статьи и возвращает их количество', async () => {
     tx.article.create.mockResolvedValue({});
-    const items: RssItem[] = [
+    const items: FeedItem[] = [
       {
         guid: 'g1',
         link: 'https://example.com/1',
@@ -48,7 +48,7 @@ describe('ArticlesRepository', () => {
 
   it('не увеличивает счётчик и не падает при повторном externalId (P2002)', async () => {
     tx.article.create.mockRejectedValue(duplicateError());
-    const items: RssItem[] = [{ guid: 'g1', link: 'https://example.com/1', title: 'Post 1' }];
+    const items: FeedItem[] = [{ guid: 'g1', link: 'https://example.com/1', title: 'Post 1' }];
 
     const count = await repository.upsertMany(
       tx as unknown as Prisma.TransactionClient,
@@ -60,7 +60,7 @@ describe('ArticlesRepository', () => {
   });
 
   it('пропускает элемент без guid и без link', async () => {
-    const items: RssItem[] = [{ title: 'Без ссылки' }];
+    const items: FeedItem[] = [{ title: 'Без ссылки' }];
 
     const count = await repository.upsertMany(
       tx as unknown as Prisma.TransactionClient,
@@ -74,7 +74,7 @@ describe('ArticlesRepository', () => {
 
   it('сохраняет элемент без даты с publishedAt: null', async () => {
     tx.article.create.mockResolvedValue({});
-    const items: RssItem[] = [{ guid: 'g1', link: 'https://example.com/1', title: 'Post 1' }];
+    const items: FeedItem[] = [{ guid: 'g1', link: 'https://example.com/1', title: 'Post 1' }];
 
     await repository.upsertMany(tx as unknown as Prisma.TransactionClient, 's1', items);
 
@@ -85,7 +85,7 @@ describe('ArticlesRepository', () => {
 
   it('пробрасывает ошибку, не связанную с уникальностью', async () => {
     tx.article.create.mockRejectedValue(new Error('boom'));
-    const items: RssItem[] = [{ guid: 'g1', link: 'https://example.com/1', title: 'Post 1' }];
+    const items: FeedItem[] = [{ guid: 'g1', link: 'https://example.com/1', title: 'Post 1' }];
 
     await expect(
       repository.upsertMany(tx as unknown as Prisma.TransactionClient, 's1', items),

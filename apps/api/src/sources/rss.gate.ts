@@ -1,17 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import Parser from 'rss-parser';
 
-export interface RssItem {
-  title?: string;
-  link?: string;
-  guid?: string;
-  isoDate?: string;
-  pubDate?: string;
-}
+import type { FeedItem } from './feed-item.interface';
 
 export interface RssFeed {
   title?: string;
-  items: RssItem[];
+  items: FeedItem[];
 }
 
 /**

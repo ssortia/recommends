@@ -200,12 +200,12 @@ export class TelegramGate {
 - Modify: `apps/api/src/sources/articles.repository.ts`
 - Modify: `apps/api/src/sources/articles.repository.spec.ts` (импорт типа, если явно ссылается на `RssItem`)
 
-- [ ] создать `feed-item.interface.ts` с интерфейсом `FeedItem` (см. Technical Details)
-- [ ] `rss.gate.ts`: `RssItem` заменить на импорт `FeedItem` из нового файла (тип `RssFeed.items: FeedItem[]`)
-- [ ] `articles.repository.ts`: параметр `items: RssItem[]` → `items: FeedItem[]`, импорт обновить
-- [ ] прогнать существующие тесты `rss.gate.spec.ts` и `articles.repository.spec.ts` — должны
+- [x] создать `feed-item.interface.ts` с интерфейсом `FeedItem` (см. Technical Details)
+- [x] `rss.gate.ts`: `RssItem` заменить на импорт `FeedItem` из нового файла (тип `RssFeed.items: FeedItem[]`)
+- [x] `articles.repository.ts`: параметр `items: RssItem[]` → `items: FeedItem[]`, импорт обновить
+- [x] прогнать существующие тесты `rss.gate.spec.ts` и `articles.repository.spec.ts` — должны
       пройти без изменений в логике (только типы)
-- [ ] запустить тесты: `pnpm --filter @repo/api test`
+- [x] запустить тесты: `pnpm --filter @repo/api test`
 
 ### Task 3: `SourceInputParser` — определение типа источника по вводу
 
@@ -216,7 +216,7 @@ export class TelegramGate {
 
 - [ ] реализовать `parseSourceInput(input: string): ParsedSourceInput | null`: `@username` и
       анкорированный `^(https?:\/\/)?t\.me\/([a-zA-Z0-9_]{5,32})\/?$` → `{ type: 'TELEGRAM',
-  username: username.toLowerCase() }`, валидный `http(s)://` URL → `{ type: 'RSS', url }`,
+username: username.toLowerCase() }`, валидный `http(s)://` URL → `{ type: 'RSS', url }`,
       иначе `null`
 - [ ] написать тесты: `@username`, `t.me/username`, `https://t.me/username`, обычный RSS URL
 - [ ] написать тест на нормализацию регистра: `@Username` и `t.me/USERNAME` дают одинаковый
