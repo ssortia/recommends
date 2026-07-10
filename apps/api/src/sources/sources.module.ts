@@ -5,6 +5,7 @@ import { RssGate } from './rss.gate';
 import { SourcesController } from './sources.controller';
 import { SourcesRepository } from './sources.repository';
 import { SourcesService } from './sources.service';
+import { TelegramGate } from './telegram.gate';
 import { UserSourcesRepository } from './user-sources.repository';
 
 @Module({
@@ -15,6 +16,7 @@ import { UserSourcesRepository } from './user-sources.repository';
     UserSourcesRepository,
     ArticlesRepository,
     RssGate,
+    TelegramGate,
   ],
 })
 export class SourcesModule {}

@@ -5,6 +5,7 @@ import type { ArticlesRepository } from './articles.repository';
 import type { RssGate } from './rss.gate';
 import type { SourcesRepository } from './sources.repository';
 import { SourcesService } from './sources.service';
+import type { TelegramGate } from './telegram.gate';
 import type { UserSourcesRepository } from './user-sources.repository';
 
 describe('SourcesService', () => {
@@ -13,6 +14,7 @@ describe('SourcesService', () => {
   let userSourcesRepository: { exists: jest.Mock; create: jest.Mock; findAllByUser: jest.Mock };
   let articlesRepository: { upsertMany: jest.Mock };
   let rssGate: { fetch: jest.Mock };
+  let telegramGate: { fetch: jest.Mock };
   let service: SourcesService;
 
   beforeEach(() => {
@@ -25,6 +27,7 @@ describe('SourcesService', () => {
     userSourcesRepository = { exists: jest.fn(), create: jest.fn(), findAllByUser: jest.fn() };
     articlesRepository = { upsertMany: jest.fn() };
     rssGate = { fetch: jest.fn() };
+    telegramGate = { fetch: jest.fn() };
 
     service = new SourcesService(
       prisma as unknown as never,
@@ -32,10 +35,20 @@ describe('SourcesService', () => {
       userSourcesRepository as unknown as UserSourcesRepository,
       articlesRepository as unknown as ArticlesRepository,
       rssGate as unknown as RssGate,
+      telegramGate as unknown as TelegramGate,
     );
   });
 
-  describe('addSource — новый Source', () => {
+  describe('addSource — некорректный ввод', () => {
+    it('бросает BadRequestException до любых сетевых вызовов, если SourceInputParser вернул null', async () => {
+      await expect(service.addSource('u1', 'случайный текст')).rejects.toThrow(BadRequestException);
+      expect(sourcesRepository.findByUrl).not.toHaveBeenCalled();
+      expect(rssGate.fetch).not.toHaveBeenCalled();
+      expect(telegramGate.fetch).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('addSource — RSS, новый Source', () => {
     it('создаёт Source/UserSource/статьи в транзакции и возвращает articlesCount', async () => {
       sourcesRepository.findByUrl.mockResolvedValue(null);
       rssGate.fetch.mockResolvedValue({ title: 'Example Feed', items: [{ guid: 'g1' }] });
@@ -100,7 +113,7 @@ describe('SourcesService', () => {
     });
   });
 
-  describe('addSource — существующий Source', () => {
+  describe('addSource — RSS, существующий Source', () => {
     it('подписывает пользователя без повторного RssGate.fetch', async () => {
       const existingSource = { id: 's1', url: 'https://example.com/feed.xml' };
       sourcesRepository.findByUrl.mockResolvedValue(existingSource);
@@ -122,6 +135,87 @@ describe('SourcesService', () => {
         ConflictException,
       );
       expect(rssGate.fetch).not.toHaveBeenCalled();
+      expect(userSourcesRepository.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('addSource — Telegram, новый канал', () => {
+    it('создаёт Source типа TELEGRAM/UserSource/статьи в транзакции и возвращает articlesCount', async () => {
+      sourcesRepository.findByUrl.mockResolvedValue(null);
+      telegramGate.fetch.mockResolvedValue({
+        title: 'Channel Title',
+        items: [{ guid: 'c/1' }],
+      });
+      const createdSource = {
+        id: 's2',
+        url: 'https://t.me/mychannel',
+        title: 'Channel Title',
+      };
+      sourcesRepository.createWithinTransaction.mockResolvedValue(createdSource);
+      articlesRepository.upsertMany.mockResolvedValue(1);
+
+      const result = await service.addSource('u1', '@mychannel');
+
+      expect(result).toEqual({ source: createdSource, articlesCount: 1 });
+      expect(sourcesRepository.findByUrl).toHaveBeenCalledWith('https://t.me/mychannel');
+      expect(telegramGate.fetch).toHaveBeenCalledWith('mychannel');
+      expect(sourcesRepository.createWithinTransaction).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          type: 'TELEGRAM',
+          url: 'https://t.me/mychannel',
+          title: 'Channel Title',
+        }),
+      );
+      expect(userSourcesRepository.create).toHaveBeenCalledWith('u1', 's2', expect.anything());
+      expect(articlesRepository.upsertMany).toHaveBeenCalledWith(expect.anything(), 's2', [
+        { guid: 'c/1' },
+      ]);
+    });
+
+    it('использует @username как title, если канал не отдаёт title', async () => {
+      sourcesRepository.findByUrl.mockResolvedValue(null);
+      telegramGate.fetch.mockResolvedValue({ items: [] });
+      sourcesRepository.createWithinTransaction.mockResolvedValue({ id: 's2' });
+      articlesRepository.upsertMany.mockResolvedValue(0);
+
+      await service.addSource('u1', '@mychannel');
+
+      expect(sourcesRepository.createWithinTransaction).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ title: '@mychannel' }),
+      );
+    });
+
+    it('бросает BadRequestException, если TelegramGate.fetch вернул null', async () => {
+      sourcesRepository.findByUrl.mockResolvedValue(null);
+      telegramGate.fetch.mockResolvedValue(null);
+
+      await expect(service.addSource('u1', '@mychannel')).rejects.toThrow(BadRequestException);
+      expect(prisma.$transaction).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('addSource — Telegram, существующий канал', () => {
+    it('подписывает пользователя без повторного TelegramGate.fetch', async () => {
+      const existingSource = { id: 's2', url: 'https://t.me/mychannel' };
+      sourcesRepository.findByUrl.mockResolvedValue(existingSource);
+      userSourcesRepository.exists.mockResolvedValue(false);
+
+      const result = await service.addSource('u2', 'https://t.me/mychannel');
+
+      expect(result).toEqual({ source: existingSource, articlesCount: 0 });
+      expect(telegramGate.fetch).not.toHaveBeenCalled();
+      expect(userSourcesRepository.create).toHaveBeenCalledWith('u2', 's2');
+    });
+
+    it('бросает ConflictException при повторной подписке без сетевого запроса', async () => {
+      const existingSource = { id: 's2', url: 'https://t.me/mychannel' };
+      sourcesRepository.findByUrl.mockResolvedValue(existingSource);
+      userSourcesRepository.exists.mockResolvedValue(true);
+
+      await expect(service.addSource('u1', '@mychannel')).rejects.toThrow(ConflictException);
+      expect(telegramGate.fetch).not.toHaveBeenCalled();
       expect(userSourcesRepository.create).not.toHaveBeenCalled();
     });
   });

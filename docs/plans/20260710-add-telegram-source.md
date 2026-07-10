@@ -264,18 +264,18 @@ username: username.toLowerCase() }`, валидный `http(s)://` URL → `{ ty
 - Modify: `apps/api/src/sources/sources.service.spec.ts`
 - Modify: `apps/api/src/sources/sources.module.ts` (зарегистрировать `TelegramGate`)
 
-- [ ] вынести общую часть addSource (поиск существующего `Source`, conflict-проверка, транзакция
+- [x] вынести общую часть addSource (поиск существующего `Source`, conflict-проверка, транзакция
       создания `Source`+`UserSource`+статей) в приватный параметризованный метод
-- [ ] публичный `addSource(userId, input)`: парсинг через `SourceInputParser`, ветвление
+- [x] публичный `addSource(userId, input)`: парсинг через `SourceInputParser`, ветвление
       RSS/Telegram согласно Solution Overview п.5, `BadRequestException` при `null` от парсера
-- [ ] зарегистрировать `TelegramGate` в `SourcesModule.providers`
-- [ ] обновить существующие RSS-тесты под новую сигнатуру (если изменился путь вызова) —
+- [x] зарегистрировать `TelegramGate` в `SourcesModule.providers`
+- [x] обновить существующие RSS-тесты под новую сигнатуру (если изменился путь вызова) —
       поведение должно остаться прежним
-- [ ] написать тесты для Telegram-ветки: новый канал (создание + articlesCount), существующий
+- [x] написать тесты для Telegram-ветки: новый канал (создание + articlesCount), существующий
       канал (conflict / переподписка без повторного fetch), `TelegramGate.fetch` вернул `null` →
       `BadRequestException`
-- [ ] написать тест на `null` от `SourceInputParser` → `BadRequestException` до любых сетевых вызовов
-- [ ] запустить тесты: `pnpm --filter @repo/api test`
+- [x] написать тест на `null` от `SourceInputParser` → `BadRequestException` до любых сетевых вызовов
+- [x] запустить тесты: `pnpm --filter @repo/api test`
 
 ### Task 7: Zod-схемы `@repo/types`
 

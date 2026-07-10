@@ -1,17 +1,28 @@
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
-import type { Source } from '@prisma/client';
+import type { Source, SourceType } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 
 import { ArticlesRepository } from './articles.repository';
+import type { FeedItem } from './feed-item.interface';
 import { RssGate } from './rss.gate';
+import { parseSourceInput } from './source-input.parser';
 import { SourcesRepository } from './sources.repository';
+import { TelegramGate } from './telegram.gate';
 import type { UserSourceWithSource } from './user-sources.repository';
 import { UserSourcesRepository } from './user-sources.repository';
 
 export interface AddSourceResult {
   source: Source;
   articlesCount: number;
+}
+
+interface AddSourceByTypeParams {
+  type: SourceType;
+  canonicalUrl: string;
+  fallbackTitle: string;
+  fetchFeed: () => Promise<{ title?: string; items: FeedItem[] } | null>;
+  notFoundMessage: string;
 }
 
 @Injectable()
@@ -22,10 +33,43 @@ export class SourcesService {
     private readonly userSourcesRepository: UserSourcesRepository,
     private readonly articlesRepository: ArticlesRepository,
     private readonly rssGate: RssGate,
+    private readonly telegramGate: TelegramGate,
   ) {}
 
-  async addSource(userId: string, url: string): Promise<AddSourceResult> {
-    const existingSource = await this.sourcesRepository.findByUrl(url);
+  async addSource(userId: string, input: string): Promise<AddSourceResult> {
+    const parsed = parseSourceInput(input);
+    if (!parsed) {
+      throw new BadRequestException(
+        'Некорректный формат: укажите URL RSS-ленты или @username/ссылку на Telegram-канал',
+      );
+    }
+
+    if (parsed.type === 'RSS') {
+      return this.addSourceByType(userId, {
+        type: 'RSS',
+        canonicalUrl: parsed.url,
+        fallbackTitle: new URL(parsed.url).host,
+        fetchFeed: () => this.rssGate.fetch(parsed.url),
+        notFoundMessage: 'Не удалось получить RSS-ленту по указанному URL',
+      });
+    }
+
+    return this.addSourceByType(userId, {
+      type: 'TELEGRAM',
+      canonicalUrl: `https://t.me/${parsed.username}`,
+      fallbackTitle: `@${parsed.username}`,
+      fetchFeed: () => this.telegramGate.fetch(parsed.username),
+      notFoundMessage: 'Не удалось найти публичный Telegram-канал по указанному имени',
+    });
+  }
+
+  // Общая часть addSource для любого типа источника: поиск существующего Source по url →
+  // conflict/переиспользование → транзакция создания Source+UserSource+статей.
+  private async addSourceByType(
+    userId: string,
+    { type, canonicalUrl, fallbackTitle, fetchFeed, notFoundMessage }: AddSourceByTypeParams,
+  ): Promise<AddSourceResult> {
+    const existingSource = await this.sourcesRepository.findByUrl(canonicalUrl);
 
     if (existingSource) {
       const alreadySubscribed = await this.userSourcesRepository.exists(userId, existingSource.id);
@@ -39,16 +83,16 @@ export class SourcesService {
       return { source: existingSource, articlesCount: 0 };
     }
 
-    const feed = await this.rssGate.fetch(url);
+    const feed = await fetchFeed();
     if (!feed) {
-      throw new BadRequestException('Не удалось получить RSS-ленту по указанному URL');
+      throw new BadRequestException(notFoundMessage);
     }
 
     return this.prisma.$transaction(async (tx) => {
       const source = await this.sourcesRepository.createWithinTransaction(tx, {
-        type: 'RSS',
-        url,
-        title: feed.title ?? new URL(url).host,
+        type,
+        url: canonicalUrl,
+        title: feed.title ?? fallbackTitle,
         lastFetchedAt: new Date(),
       });
       await this.userSourcesRepository.create(userId, source.id, tx);
