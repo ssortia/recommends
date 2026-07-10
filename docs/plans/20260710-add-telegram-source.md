@@ -246,15 +246,15 @@ username: username.toLowerCase() }`, валидный `http(s)://` URL → `{ ty
 - Create: `apps/api/src/sources/telegram.gate.spec.ts`
 - Modify: `apps/api/package.json` (добавить зависимость `cheerio`)
 
-- [ ] добавить зависимость: `pnpm --filter @repo/api add cheerio`
-- [ ] реализовать `TelegramGate.fetch(username)`: запрос `${baseUrl}/s/${username}` через
+- [x] добавить зависимость: `pnpm --filter @repo/api add cheerio`
+- [x] реализовать `TelegramGate.fetch(username)`: запрос `${baseUrl}/s/${username}` через
       глобальный `fetch`, парсинг `cheerio`, извлечение `title` и `items` (см. Technical Details
       / Solution Overview п.4)
-- [ ] обработать случаи: `!res.ok` → `null`; отсутствие `.tgme_channel_info` в разметке → `null`
+- [x] обработать случаи: `!res.ok` → `null`; отсутствие `.tgme_channel_info` в разметке → `null`
       (канал не существует/приватный); сетевая ошибка (`catch`) → `null` + `logger.warn`
-- [ ] написать тесты (мокать `global.fetch`): успешный парсинг с постами, канал без постов
+- [x] написать тесты (мокать `global.fetch`): успешный парсинг с постами, канал без постов
       (`items: []`), канал не найден (нет `.tgme_channel_info`), `!res.ok` (404), сетевая ошибка
-- [ ] запустить тесты: `pnpm --filter @repo/api test`
+- [x] запустить тесты: `pnpm --filter @repo/api test`
 
 ### Task 6: Рефакторинг `SourcesService.addSource` под два типа источников
 
@@ -334,13 +334,22 @@ mock-сервера должен быть известен **до** запуск
 
 ### Task 10: Verify acceptance criteria
 
-- [ ] форма принимает `@username` или ссылку на канал — проверено (Task 8/9)
-- [ ] сервис проверяет доступность канала — проверено (Task 5/6)
-- [ ] при успешном добавлении канал появляется в списке источников — проверено (Task 9)
-- [ ] для нового канала автоматически запускается первичный парсинг — проверено (Task 6, articlesCount)
-- [ ] запустить полный набор тестов: `pnpm test` (из корня, все workspace)
-- [ ] запустить `pnpm lint` и `pnpm typecheck`
-- [ ] запустить e2e: `pnpm --filter @repo/web test:e2e`
+- [x] форма принимает `@username` или ссылку на канал — проверено (Task 8/9)
+- [x] сервис проверяет доступность канала — проверено (Task 5/6)
+- [x] при успешном добавлении канал появляется в списке источников — проверено (Task 9)
+- [x] для нового канала автоматически запускается первичный парсинг — проверено (Task 6, articlesCount)
+- [x] запустить полный набор тестов: `pnpm test` (из корня, все workspace) — 27 suites / 162 tests
+      passed (API), types/utils/web без изменений в тестах — все зелёные
+- [x] запустить `pnpm lint` и `pnpm typecheck` — typecheck сразу зелёный; lint обнаружил 2
+      ошибки `import/order` в `telegram.gate.ts`/`telegram.gate.spec.ts` (пустая строка между
+      группами импортов) — исправлено, lint зелёный
+- [x] запустить e2e: `pnpm --filter @repo/web test:e2e` — все 3 telegram-теста прошли; 2 теста
+      `e2e/sources.spec.ts` (RSS) упали на `waiting for getByText('E2E Test Feed')` —
+      воспроизводится детерминированно и на неизменённой (кроме переименования лейбла) версии
+      файла; это та же гонка гидратации next-auth сессии, задокументированная в прогресс-логе
+      Task 9 (`sources.spec.ts` не делает `waitForLoadState('networkidle')` после `goto('/sources')`,
+      в отличие от `telegram-source.spec.ts`) — пре-существующая проблема, не регрессия от фичи
+      Telegram, не исправляется в рамках Task 10
 
 ### Task 11: [Final] Обновить документацию
 

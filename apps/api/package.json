@@ -31,6 +31,7 @@
     "@repo/types": "workspace:*",
     "@repo/utils": "workspace:*",
     "bcryptjs": "^2.4.3",
+    "cheerio": "^1.2.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "fastify": "^5.7.4",
