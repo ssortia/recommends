@@ -38,9 +38,12 @@ async function bootstrap() {
     .split(',')
     .map((origin) => origin.trim());
 
+  // @fastify/cors по умолчанию разрешает только GET,HEAD,POST — без явного списка
+  // preflight для DELETE/PUT/PATCH (например, DELETE /sources/:id) падает в браузере.
   app.enableCors({
     origin: corsOrigins,
     credentials: true,
+    methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'],
   });
 
   const config = new DocumentBuilder()

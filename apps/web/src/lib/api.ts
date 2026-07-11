@@ -62,8 +62,10 @@ async function apiFetch<T>(path: string, options: RequestOptions = {}): Promise<
     if (qs) path = `${path}?${qs}`;
   }
 
+  // Content-Type: application/json без тела (например, DELETE без body) заставляет
+  // Fastify-парсер ждать JSON-тело и падать с 400 — заголовок нужен только когда есть body.
   const headers: HeadersInit = {
-    'Content-Type': 'application/json',
+    ...(fetchOptions.body !== undefined ? { 'Content-Type': 'application/json' } : {}),
     ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
     ...fetchOptions.headers,
   };
