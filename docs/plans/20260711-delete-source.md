@@ -80,12 +80,12 @@
 - Modify: `apps/api/src/sources/sources.service.spec.ts`
 - Modify: `apps/api/src/sources/sources.controller.spec.ts`
 
-- [ ] в `SourcesService` добавить `removeSource(userId: string, sourceId: string): Promise<void>` — проверка `userSourcesRepository.exists`, при отсутствии `NotFoundException('Подписка на источник не найдена')`, иначе `userSourcesRepository.delete`
-- [ ] в `SourcesController` добавить `@Delete(':sourceId')` с `@HttpCode(204)`, `@ApiOperation`, `@ApiParam({ name: 'sourceId' })`, вызывающий `sourcesService.removeSource(user.id, sourceId)`
-- [ ] написать тест сервиса: успешное удаление подписки
-- [ ] написать тест сервиса: `NotFoundException`, если подписки не существует
-- [ ] написать тест контроллера: вызов с правильными аргументами, ожидаемый статус
-- [ ] запустить тесты — должны пройти перед следующей задачей
+- [x] в `SourcesService` добавить `removeSource(userId: string, sourceId: string): Promise<void>` — проверка `userSourcesRepository.exists`, при отсутствии `NotFoundException('Подписка на источник не найдена')`, иначе `userSourcesRepository.delete`
+- [x] в `SourcesController` добавить `@Delete(':sourceId')` с `@HttpCode(204)`, `@ApiOperation`, `@ApiParam({ name: 'sourceId' })`, вызывающий `sourcesService.removeSource(user.id, sourceId)`
+- [x] написать тест сервиса: успешное удаление подписки
+- [x] написать тест сервиса: `NotFoundException`, если подписки не существует
+- [x] написать тест контроллера: вызов с правильными аргументами, ожидаемый статус
+- [x] запустить тесты — должны пройти перед следующей задачей
 
 ### Task 3: Добавить shadcn AlertDialog компонент
 

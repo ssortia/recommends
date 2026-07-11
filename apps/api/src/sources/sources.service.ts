@@ -1,4 +1,9 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import type { Source, SourceType } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
@@ -104,5 +109,16 @@ export class SourcesService {
 
   listForUser(userId: string): Promise<UserSourceWithSource[]> {
     return this.userSourcesRepository.findAllByUser(userId);
+  }
+
+  // Source/Article намеренно не удаляются: данные общие между пользователями,
+  // отписка убирает только связь UserSource текущего пользователя.
+  async removeSource(userId: string, sourceId: string): Promise<void> {
+    const subscribed = await this.userSourcesRepository.exists(userId, sourceId);
+    if (!subscribed) {
+      throw new NotFoundException('Подписка на источник не найдена');
+    }
+
+    await this.userSourcesRepository.delete(userId, sourceId);
   }
 }

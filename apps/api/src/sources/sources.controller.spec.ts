@@ -1,16 +1,16 @@
-import { BadRequestException, ConflictException } from '@nestjs/common';
+import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
 import type { User } from '@prisma/client';
 
 import { SourcesController } from './sources.controller';
 import type { SourcesService } from './sources.service';
 
 describe('SourcesController', () => {
-  let sourcesService: { addSource: jest.Mock; listForUser: jest.Mock };
+  let sourcesService: { addSource: jest.Mock; listForUser: jest.Mock; removeSource: jest.Mock };
   let controller: SourcesController;
   const user = { id: 'u1' } as User;
 
   beforeEach(() => {
-    sourcesService = { addSource: jest.fn(), listForUser: jest.fn() };
+    sourcesService = { addSource: jest.fn(), listForUser: jest.fn(), removeSource: jest.fn() };
     controller = new SourcesController(sourcesService as unknown as SourcesService);
   });
 
@@ -51,6 +51,22 @@ describe('SourcesController', () => {
 
       expect(response).toEqual(rows);
       expect(sourcesService.listForUser).toHaveBeenCalledWith('u1');
+    });
+  });
+
+  describe('removeSource', () => {
+    it('делегирует userId и sourceId в SourcesService.removeSource', async () => {
+      sourcesService.removeSource.mockResolvedValue(undefined);
+
+      await controller.removeSource('s1', user);
+
+      expect(sourcesService.removeSource).toHaveBeenCalledWith('u1', 's1');
+    });
+
+    it('пробрасывает NotFoundException из сервиса', async () => {
+      sourcesService.removeSource.mockRejectedValue(new NotFoundException('not found'));
+
+      await expect(controller.removeSource('s1', user)).rejects.toThrow(NotFoundException);
     });
   });
 });

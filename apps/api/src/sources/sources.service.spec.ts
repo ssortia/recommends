@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException } from '@nestjs/common';
+import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
 
 import type { ArticlesRepository } from './articles.repository';
@@ -11,7 +11,12 @@ import type { UserSourcesRepository } from './user-sources.repository';
 describe('SourcesService', () => {
   let prisma: { $transaction: jest.Mock };
   let sourcesRepository: { findByUrl: jest.Mock; createWithinTransaction: jest.Mock };
-  let userSourcesRepository: { exists: jest.Mock; create: jest.Mock; findAllByUser: jest.Mock };
+  let userSourcesRepository: {
+    exists: jest.Mock;
+    create: jest.Mock;
+    findAllByUser: jest.Mock;
+    delete: jest.Mock;
+  };
   let articlesRepository: { upsertMany: jest.Mock };
   let rssGate: { fetch: jest.Mock };
   let telegramGate: { fetch: jest.Mock };
@@ -24,7 +29,12 @@ describe('SourcesService', () => {
       ),
     };
     sourcesRepository = { findByUrl: jest.fn(), createWithinTransaction: jest.fn() };
-    userSourcesRepository = { exists: jest.fn(), create: jest.fn(), findAllByUser: jest.fn() };
+    userSourcesRepository = {
+      exists: jest.fn(),
+      create: jest.fn(),
+      findAllByUser: jest.fn(),
+      delete: jest.fn(),
+    };
     articlesRepository = { upsertMany: jest.fn() };
     rssGate = { fetch: jest.fn() };
     telegramGate = { fetch: jest.fn() };
@@ -229,6 +239,24 @@ describe('SourcesService', () => {
 
       expect(result).toEqual(rows);
       expect(userSourcesRepository.findAllByUser).toHaveBeenCalledWith('u1');
+    });
+  });
+
+  describe('removeSource', () => {
+    it('удаляет подписку, если она существует', async () => {
+      userSourcesRepository.exists.mockResolvedValue(true);
+
+      await service.removeSource('u1', 's1');
+
+      expect(userSourcesRepository.exists).toHaveBeenCalledWith('u1', 's1');
+      expect(userSourcesRepository.delete).toHaveBeenCalledWith('u1', 's1');
+    });
+
+    it('бросает NotFoundException, если подписки не существует', async () => {
+      userSourcesRepository.exists.mockResolvedValue(false);
+
+      await expect(service.removeSource('u1', 's1')).rejects.toThrow(NotFoundException);
+      expect(userSourcesRepository.delete).not.toHaveBeenCalled();
     });
   });
 });
