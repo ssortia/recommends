@@ -76,7 +76,12 @@ export function SourcesList() {
                 variant="ghost"
                 size="icon"
                 aria-label="Удалить подписку"
-                onClick={() => setPendingDeleteId(entry.source.id)}
+                onClick={() => {
+                  // Сбрасываем состояние прошлой мутации, иначе ошибка удаления
+                  // источника A задержится и покажется при открытии диалога для источника B.
+                  deleteSource.reset();
+                  setPendingDeleteId(entry.source.id);
+                }}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -88,7 +93,10 @@ export function SourcesList() {
       <AlertDialog
         open={pendingDeleteId !== null}
         onOpenChange={(open) => {
-          if (!open) setPendingDeleteId(null);
+          if (!open) {
+            setPendingDeleteId(null);
+            deleteSource.reset();
+          }
         }}
       >
         <AlertDialogContent>

@@ -1,5 +1,12 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import type { User } from '@prisma/client';
 
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -38,6 +45,7 @@ export class SourcesController {
   @HttpCode(204)
   @ApiOperation({ summary: 'Unsubscribe current user from a source' })
   @ApiParam({ name: 'sourceId' })
+  @ApiNoContentResponse({ description: 'Successfully unsubscribed' })
   async removeSource(@Param('sourceId') sourceId: string, @CurrentUser() user: User) {
     await this.sourcesService.removeSource(user.id, sourceId);
   }

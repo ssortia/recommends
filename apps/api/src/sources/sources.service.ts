@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import type { Source, SourceType } from '@prisma/client';
+import { Prisma, type Source, type SourceType } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -119,6 +119,15 @@ export class SourcesService {
       throw new NotFoundException('Подписка на источник не найдена');
     }
 
-    await this.userSourcesRepository.delete(userId, sourceId);
+    try {
+      await this.userSourcesRepository.delete(userId, sourceId);
+    } catch (error) {
+      // TOCTOU: между exists() и delete() запись могла удалиться конкурентным запросом —
+      // Prisma в этом случае бросает P2025, превращаем его в тот же осмысленный 404.
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+        throw new NotFoundException('Подписка на источник не найдена');
+      }
+      throw error;
+    }
   }
 }

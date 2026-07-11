@@ -40,6 +40,7 @@ async function bootstrap() {
 
   // @fastify/cors по умолчанию разрешает только GET,HEAD,POST — без явного списка
   // preflight для DELETE/PUT/PATCH (например, DELETE /sources/:id) падает в браузере.
+  // См. также docs/guides/development.md#особенности-fastify-адаптера.
   app.enableCors({
     origin: corsOrigins,
     credentials: true,

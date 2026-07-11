@@ -1,6 +1,10 @@
 import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
 import type { User } from '@prisma/client';
 
+// Ключ метаданных @HttpCode() не экспортируется публично из @nestjs/common —
+// используем ту же строку, что и сам декоратор (см. constants.ts пакета).
+const HTTP_CODE_METADATA = '__httpCode__';
+
 import { SourcesController } from './sources.controller';
 import type { SourcesService } from './sources.service';
 
@@ -61,6 +65,12 @@ describe('SourcesController', () => {
       await controller.removeSource('s1', user);
 
       expect(sourcesService.removeSource).toHaveBeenCalledWith('u1', 's1');
+    });
+
+    it('объявлен с @HttpCode(204) — нет тела ответа при успешной отписке', () => {
+      const httpCode = Reflect.getMetadata(HTTP_CODE_METADATA, controller.removeSource);
+
+      expect(httpCode).toBe(204);
     });
 
     it('пробрасывает NotFoundException из сервиса', async () => {

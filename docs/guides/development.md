@@ -73,6 +73,7 @@ pnpm format         # Prettier форматирование
 ```
 
 Запустить только для одного пакета:
+
 ```bash
 pnpm --filter @repo/api lint
 pnpm --filter @repo/web typecheck
@@ -117,9 +118,23 @@ http://localhost:3001/api/docs
 ```
 
 Для тестирования защищённых эндпоинтов:
+
 1. Выполни `POST /auth/login` — получи `accessToken`
 2. Нажми кнопку «Authorize» (🔒) вверху страницы
 3. Вставь `accessToken` в поле `BearerAuth`
+
+---
+
+## Особенности Fastify-адаптера
+
+Два неочевидных момента, о которые легко споткнуться при добавлении новых эндпоинтов:
+
+- **CORS**: `@fastify/cors` по умолчанию разрешает только `GET,HEAD,POST`. Preflight для
+  `DELETE`/`PUT`/`PATCH` падает в браузере, если явно не перечислить методы в
+  `app.enableCors({ methods: [...] })` (`apps/api/src/main.ts`).
+- **Бестелые запросы**: встроенный JSON body parser Fastify падает с 400, если запрос без тела
+  (например, `DELETE`) приходит с заголовком `Content-Type: application/json`. Web-клиент
+  (`apps/web/src/lib/api.ts`) ставит этот заголовок только когда есть `body`.
 
 ---
 
@@ -128,6 +143,7 @@ http://localhost:3001/api/docs
 Переменные хранятся в `.env` (не коммитится). Пример — в `.env.example`.
 
 При добавлении новой переменной:
+
 1. Добавь в `.env.example` с комментарием и примером значения
 2. Добавь валидацию в `apps/api/src/config/env.ts` (для API) или в `src/env.ts` (для Web)
 3. Обнови таблицу в `CLAUDE.md`
@@ -169,13 +185,13 @@ Middleware (`src/middleware.ts`) защищает все маршруты кро
 
 ## Shared пакеты
 
-| Пакет | Что экспортирует | Кто использует |
-|---|---|---|
-| `@repo/types` | Zod-схемы и TypeScript-типы для DTO | API, Web |
-| `src/components/ui` | shadcn/ui компоненты, `cn()` утилита | Внутри `apps/web` |
-| `@repo/typescript-config` | tsconfig базы (base, nestjs, nextjs) | Все |
-| `@repo/eslint-config` | ESLint конфиги | Все |
-| `@repo/prettier-config` | Prettier конфиг | Все |
+| Пакет                     | Что экспортирует                     | Кто использует    |
+| ------------------------- | ------------------------------------ | ----------------- |
+| `@repo/types`             | Zod-схемы и TypeScript-типы для DTO  | API, Web          |
+| `src/components/ui`       | shadcn/ui компоненты, `cn()` утилита | Внутри `apps/web` |
+| `@repo/typescript-config` | tsconfig базы (base, nestjs, nextjs) | Все               |
+| `@repo/eslint-config`     | ESLint конфиги                       | Все               |
+| `@repo/prettier-config`   | Prettier конфиг                      | Все               |
 
 ---
 

@@ -1,5 +1,5 @@
 import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
-import type { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 import type { ArticlesRepository } from './articles.repository';
 import type { RssGate } from './rss.gate';
@@ -257,6 +257,26 @@ describe('SourcesService', () => {
 
       await expect(service.removeSource('u1', 's1')).rejects.toThrow(NotFoundException);
       expect(userSourcesRepository.delete).not.toHaveBeenCalled();
+    });
+
+    it('превращает P2025 от delete() (TOCTOU-гонка после exists()) в NotFoundException', async () => {
+      userSourcesRepository.exists.mockResolvedValue(true);
+      userSourcesRepository.delete.mockRejectedValue(
+        new Prisma.PrismaClientKnownRequestError('Record not found', {
+          code: 'P2025',
+          clientVersion: '5.0.0',
+        }),
+      );
+
+      await expect(service.removeSource('u1', 's1')).rejects.toThrow(NotFoundException);
+    });
+
+    it('пробрасывает прочие ошибки delete() без преобразования', async () => {
+      userSourcesRepository.exists.mockResolvedValue(true);
+      const unexpected = new Error('connection lost');
+      userSourcesRepository.delete.mockRejectedValue(unexpected);
+
+      await expect(service.removeSource('u1', 's1')).rejects.toThrow(unexpected);
     });
   });
 });
