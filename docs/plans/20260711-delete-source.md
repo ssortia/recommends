@@ -106,11 +106,11 @@
 - Modify: `apps/web/src/hooks/use-sources.ts`
 - Modify: `apps/web/src/lib/api.ts` (если отсутствует метод `delete`)
 
-- [ ] `api.delete` уже есть в `lib/api.ts` (обрабатывает `204 → undefined`) — использовать как есть, без изменений
-- [ ] добавить `sourcesApi.remove(sourceId: string, accessToken: string): Promise<void>`
-- [ ] добавить хук `useDeleteSource()` — `useMutation`, `mutationFn: (sourceId) => sourcesApi.remove(sourceId, session!.accessToken!)`, `onSuccess: () => queryClient.invalidateQueries({ queryKey: ['sources'] })`
-- [ ] написать unit-тест (если в проекте есть тесты хуков/api-слоя по аналогии с существующими — проверить наличие) или, если для web-слоя юнит-тестов на хуки нет в проекте, ограничиться типами и e2e-покрытием в Task 5
-- [ ] запустить `pnpm typecheck`/имеющиеся тесты — должны пройти перед следующей задачей
+- [x] `api.delete` уже есть в `lib/api.ts` (обрабатывает `204 → undefined`) — использовать как есть, без изменений
+- [x] добавить `sourcesApi.remove(sourceId: string, accessToken: string): Promise<void>`
+- [x] добавить хук `useDeleteSource()` — `useMutation`, `mutationFn: (sourceId) => sourcesApi.remove(sourceId, session!.accessToken!)`, `onSuccess: () => queryClient.invalidateQueries({ queryKey: ['sources'] })`
+- [x] написать unit-тест (если в проекте есть тесты хуков/api-слоя по аналогии с существующими — проверить наличие) или, если для web-слоя юнит-тестов на хуки нет в проекте, ограничиться типами и e2e-покрытием в Task 5 — в проекте нет юнит-тестов на web-хуки/api-слой (только Playwright e2e в `apps/web/e2e/`), поэтому ограничились типами; покрытие добавится в Task 5
+- [x] запустить `pnpm typecheck`/имеющиеся тесты — должны пройти перед следующей задачей
 
 ### Task 5: Добавить кнопку удаления с подтверждением в SourcesList + e2e-тест
 

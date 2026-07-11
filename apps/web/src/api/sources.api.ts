@@ -13,4 +13,7 @@ export const sourcesApi = {
     api.post<AddSourceResponse>('/sources', { url }, { accessToken }),
 
   list: (accessToken: string) => api.get<UserSourceEntry[]>('/sources', { accessToken }),
+
+  remove: (sourceId: string, accessToken: string) =>
+    api.delete<void>(`/sources/${sourceId}`, { accessToken }),
 };

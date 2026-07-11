@@ -24,3 +24,13 @@ export function useAddSource() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['sources'] }),
   });
 }
+
+/** Хук для отписки от источника с автоматической инвалидацией списка. */
+export function useDeleteSource() {
+  const { data: session } = useSession();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (sourceId: string) => sourcesApi.remove(sourceId, session!.accessToken!),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['sources'] }),
+  });
+}
