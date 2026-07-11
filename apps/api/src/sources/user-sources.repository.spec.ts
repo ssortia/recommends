@@ -8,6 +8,7 @@ describe('UserSourcesRepository', () => {
       findUnique: jest.Mock;
       create: jest.Mock;
       findMany: jest.Mock;
+      delete: jest.Mock;
     };
   };
   let repository: UserSourcesRepository;
@@ -18,6 +19,7 @@ describe('UserSourcesRepository', () => {
         findUnique: jest.fn(),
         create: jest.fn(),
         findMany: jest.fn(),
+        delete: jest.fn(),
       },
     };
     repository = new UserSourcesRepository(prisma as unknown as PrismaService);
@@ -79,5 +81,22 @@ describe('UserSourcesRepository', () => {
       include: { source: true },
       orderBy: { createdAt: 'desc' },
     });
+  });
+
+  it('delete вызывает prisma.userSource.delete с правильным where', async () => {
+    prisma.userSource.delete.mockResolvedValue({ userId: 'u1', sourceId: 's1' });
+
+    await repository.delete('u1', 's1');
+
+    expect(prisma.userSource.delete).toHaveBeenCalledWith({
+      where: { userId_sourceId: { userId: 'u1', sourceId: 's1' } },
+    });
+  });
+
+  it('delete пробрасывает ошибку P2025, если записи нет', async () => {
+    const notFoundError = Object.assign(new Error('Record not found'), { code: 'P2025' });
+    prisma.userSource.delete.mockRejectedValue(notFoundError);
+
+    await expect(repository.delete('u1', 's1')).rejects.toBe(notFoundError);
   });
 });

@@ -33,4 +33,14 @@ export class UserSourcesRepository {
       orderBy: { createdAt: 'desc' },
     });
   }
+
+  /**
+   * Удаляет подписку по составному ключу. Если записи нет, Prisma бросит P2025 —
+   * репозиторий не перехватывает, обработка (проверка exists → 404) на уровне сервиса.
+   */
+  delete(userId: string, sourceId: string): Promise<UserSource> {
+    return this.prisma.userSource.delete({
+      where: { userId_sourceId: { userId, sourceId } },
+    });
+  }
 }

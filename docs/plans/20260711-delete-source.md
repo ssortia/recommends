@@ -66,10 +66,10 @@
 - Modify: `apps/api/src/sources/user-sources.repository.ts`
 - Modify: `apps/api/src/sources/user-sources.repository.spec.ts`
 
-- [ ] добавить метод `delete(userId: string, sourceId: string): Promise<UserSource>` — удаление по составному ключу `userId_sourceId`
-- [ ] написать тест: успешное удаление вызывает `prisma.userSource.delete` с правильным `where`
-- [ ] написать тест: если записи нет — Prisma бросает `P2025`, репозиторий не перехватывает (ошибка пробрасывается наверх, обработка — в сервисе через предварительный `exists`)
-- [ ] запустить тесты — должны пройти перед следующей задачей
+- [x] добавить метод `delete(userId: string, sourceId: string): Promise<UserSource>` — удаление по составному ключу `userId_sourceId`
+- [x] написать тест: успешное удаление вызывает `prisma.userSource.delete` с правильным `where`
+- [x] написать тест: если записи нет — Prisma бросает `P2025`, репозиторий не перехватывает (ошибка пробрасывается наверх, обработка — в сервисе через предварительный `exists`)
+- [x] запустить тесты — должны пройти перед следующей задачей
 
 ### Task 2: Добавить SourcesService.removeSource и эндпоинт DELETE /sources/:sourceId
 
