@@ -94,9 +94,9 @@
 - Create: `apps/web/src/components/ui/alert-dialog.tsx`
 - Modify: `apps/web/package.json` (добавить `@radix-ui/react-alert-dialog`)
 
-- [ ] установить `@radix-ui/react-alert-dialog` в `apps/web`
-- [ ] создать `alert-dialog.tsx` по стандартному shadcn-паттерну (Root, Trigger, Portal, Overlay, Content, Header, Footer, Title, Description, Action, Cancel), используя `cn` из `@/lib/utils` и стиль, аналогичный `button.tsx`
-- [ ] проверить `pnpm typecheck` для `apps/web` — компонент должен компилироваться без ошибок
+- [x] установить `@radix-ui/react-alert-dialog` в `apps/web`
+- [x] создать `alert-dialog.tsx` по стандартному shadcn-паттерну (Root, Trigger, Portal, Overlay, Content, Header, Footer, Title, Description, Action, Cancel), используя `cn` из `@/lib/utils` и стиль, аналогичный `button.tsx`
+- [x] проверить `pnpm typecheck` для `apps/web` — компонент должен компилироваться без ошибок
 
 ### Task 4: Добавить sourcesApi.remove и useDeleteSource
 
