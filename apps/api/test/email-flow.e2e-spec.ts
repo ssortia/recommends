@@ -1,7 +1,6 @@
-// Обязательные env подгружает setup-e2e.ts из корневого .env; для тестов жёстко
-// фиксируем json-транспорт почты, чтобы письма не уходили наружу. Нужен реальный
-// Postgres (docker compose, порт 5441) — без него тесты упадут на $connect.
-process.env['MAIL_TRANSPORT'] = 'json';
+// Обязательные env, включая json-транспорт почты, подгружает setup-e2e.ts из
+// корневого .env. Нужен реальный Postgres (docker compose, порт 5441) — без
+// него тесты упадут на $connect.
 
 import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
