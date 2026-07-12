@@ -58,10 +58,10 @@ Unit-тесты (`mailer.service.spec.ts`, `auth.service.spec.ts`, `verification
 - Modify: `apps/api/test/setup-e2e.ts`
 - Modify: `apps/api/test/email-flow.e2e-spec.ts`
 
-- [ ] в `apps/api/test/setup-e2e.ts` добавить `process.env['MAIL_TRANSPORT'] = 'json';` перед вызовом `loadRootEnv()`, с кратким комментарием почему (единая защита от реальной отправки писем во всех e2e-сьютах)
-- [ ] убрать `process.env['MAIL_TRANSPORT'] = 'json';` и связанный комментарий из шапки `apps/api/test/email-flow.e2e-spec.ts` (стал избыточным дублированием)
-- [ ] прогнать `pnpm --filter @repo/api test:e2e` — все существующие e2e-сьюты должны остаться зелёными
-- [ ] run tests — must pass before next task
+- [x] в `apps/api/test/setup-e2e.ts` добавить `process.env['MAIL_TRANSPORT'] = 'json';` перед вызовом `loadRootEnv()`, с кратким комментарием почему (единая защита от реальной отправки писем во всех e2e-сьютах)
+- [x] убрать `process.env['MAIL_TRANSPORT'] = 'json';` и связанный комментарий из шапки `apps/api/test/email-flow.e2e-spec.ts` (стал избыточным дублированием)
+- [x] прогнать `pnpm --filter @repo/api test:e2e` — все существующие e2e-сьюты должны остаться зелёными
+- [x] run tests — must pass before next task
 
 ### Task 2: Ревизия unit-тестов auth/verification на реальные вызовы nodemailer
 
