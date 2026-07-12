@@ -30,10 +30,24 @@ describe('sources schemas', () => {
       type: 'RSS',
       url: 'https://example.com/feed.xml',
       title: 'Example Feed',
+      faviconUrl: null,
       lastFetchedAt: new Date().toISOString(),
       createdAt: new Date().toISOString(),
     };
     expect(SourceSchema.parse(source)).toMatchObject({ id: source.id, title: source.title });
+  });
+
+  it('SourceSchema принимает faviconUrl со значением URL', () => {
+    const source = {
+      id: 'src_1',
+      type: 'RSS',
+      url: 'https://example.com/feed.xml',
+      title: 'Example Feed',
+      faviconUrl: 'https://example.com/favicon.ico',
+      lastFetchedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+    };
+    expect(SourceSchema.parse(source).faviconUrl).toBe('https://example.com/favicon.ico');
   });
 
   it('SourceSchema принимает lastFetchedAt = null', () => {
@@ -42,6 +56,7 @@ describe('sources schemas', () => {
       type: 'RSS',
       url: 'https://example.com/feed.xml',
       title: 'Example Feed',
+      faviconUrl: null,
       lastFetchedAt: null,
       createdAt: new Date().toISOString(),
     };
@@ -54,6 +69,7 @@ describe('sources schemas', () => {
       type: 'TELEGRAM',
       url: 'https://t.me/channel',
       title: '@channel',
+      faviconUrl: null,
       lastFetchedAt: null,
       createdAt: new Date().toISOString(),
     };
@@ -66,6 +82,7 @@ describe('sources schemas', () => {
       type: 'UNKNOWN',
       url: 'https://example.com/feed.xml',
       title: 'Example Feed',
+      faviconUrl: null,
       lastFetchedAt: null,
       createdAt: new Date().toISOString(),
     };
@@ -79,6 +96,7 @@ describe('sources schemas', () => {
         type: 'RSS',
         url: 'https://example.com/feed.xml',
         title: 'Example Feed',
+        faviconUrl: null,
         lastFetchedAt: null,
         createdAt: new Date().toISOString(),
       },

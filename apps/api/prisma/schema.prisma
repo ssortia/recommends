@@ -93,6 +93,8 @@ model Source {
   url           String     @unique
   // Часть фидов не отдаёт <title> канала — fallback на хост URL в SourcesService.
   title         String
+  // URL иконки сайта-источника (favicon), резолвится FaviconGate при создании RSS-источника.
+  faviconUrl    String?
   lastFetchedAt DateTime?
   createdAt     DateTime   @default(now())
 
