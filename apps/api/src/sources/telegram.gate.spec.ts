@@ -52,6 +52,54 @@ describe('TelegramGate', () => {
     });
   });
 
+  it('возвращает photoUrl из src аватарки канала', async () => {
+    const html = `
+      <div class="tgme_channel_info">
+        <div class="tgme_channel_info_header">
+          <i class="tgme_page_photo_image"><img src="https://cdn4.telesco.pe/file/avatar.jpg"></i>
+          <div class="tgme_channel_info_header_title">Photo Channel</div>
+        </div>
+      </div>
+    `;
+    fetchMock.mockResolvedValue({ ok: true, text: async () => html });
+
+    const result = await gate.fetch('withphoto');
+
+    expect(result?.photoUrl).toBe('https://cdn4.telesco.pe/file/avatar.jpg');
+  });
+
+  it('photoUrl отсутствует, если у канала нет аватарки (нет <img> внутри .tgme_page_photo_image)', async () => {
+    const html = `
+      <div class="tgme_channel_info">
+        <div class="tgme_channel_info_header">
+          <i class="tgme_page_photo_image bgcolor0" data-content="NP"></i>
+          <div class="tgme_channel_info_header_title">No Photo Channel</div>
+        </div>
+      </div>
+    `;
+    fetchMock.mockResolvedValue({ ok: true, text: async () => html });
+
+    const result = await gate.fetch('nophoto');
+
+    expect(result?.photoUrl).toBeUndefined();
+  });
+
+  it('игнорирует нестандартный протокол в src аватарки (data:/javascript:)', async () => {
+    const html = `
+      <div class="tgme_channel_info">
+        <div class="tgme_channel_info_header">
+          <i class="tgme_page_photo_image"><img src="javascript:alert(1)"></i>
+          <div class="tgme_channel_info_header_title">Malicious Channel</div>
+        </div>
+      </div>
+    `;
+    fetchMock.mockResolvedValue({ ok: true, text: async () => html });
+
+    const result = await gate.fetch('malicious');
+
+    expect(result?.photoUrl).toBeUndefined();
+  });
+
   it('возвращает items: [] когда у канала нет постов', async () => {
     const html = `
       <div class="tgme_channel_info">

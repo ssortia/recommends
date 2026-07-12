@@ -209,6 +209,39 @@ describe('SourcesService', () => {
       );
     });
 
+    it('подставляет faviconUrl из photoUrl, полученного вместе с фидом от TelegramGate', async () => {
+      sourcesRepository.findByUrl.mockResolvedValue(null);
+      telegramGate.fetch.mockResolvedValue({
+        title: 'Channel Title',
+        photoUrl: 'https://cdn.telesco.pe/avatar.jpg',
+        items: [],
+      });
+      sourcesRepository.createWithinTransaction.mockResolvedValue({ id: 's2' });
+      articlesRepository.upsertMany.mockResolvedValue(0);
+
+      await service.addSource('u1', '@mychannel');
+
+      expect(faviconGate.fetch).not.toHaveBeenCalled();
+      expect(sourcesRepository.createWithinTransaction).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ faviconUrl: 'https://cdn.telesco.pe/avatar.jpg' }),
+      );
+    });
+
+    it('faviconUrl остаётся null, если канал без аватарки (TelegramGate не вернул photoUrl)', async () => {
+      sourcesRepository.findByUrl.mockResolvedValue(null);
+      telegramGate.fetch.mockResolvedValue({ title: 'Channel Title', items: [] });
+      sourcesRepository.createWithinTransaction.mockResolvedValue({ id: 's2' });
+      articlesRepository.upsertMany.mockResolvedValue(0);
+
+      await service.addSource('u1', '@mychannel');
+
+      expect(sourcesRepository.createWithinTransaction).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ faviconUrl: null }),
+      );
+    });
+
     it('использует @username как title, если канал не отдаёт title', async () => {
       sourcesRepository.findByUrl.mockResolvedValue(null);
       telegramGate.fetch.mockResolvedValue({ items: [] });

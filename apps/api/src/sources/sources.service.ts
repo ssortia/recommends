@@ -27,7 +27,7 @@ interface AddSourceByTypeParams {
   type: SourceType;
   canonicalUrl: string;
   fallbackTitle: string;
-  fetchFeed: () => Promise<{ title?: string; items: FeedItem[] } | null>;
+  fetchFeed: () => Promise<{ title?: string; photoUrl?: string; items: FeedItem[] } | null>;
   notFoundMessage: string;
 }
 
@@ -95,10 +95,13 @@ export class SourcesService {
       throw new BadRequestException(notFoundMessage);
     }
 
-    // Favicon фетчится только для RSS (у Telegram-каналов нет классического favicon)
-    // и до открытия транзакции — сетевой запрос не должен выполняться под открытой БД-транзакцией.
+    // Для RSS favicon фетчится отдельным запросом до открытия транзакции — сетевой запрос
+    // не должен выполняться под открытой БД-транзакцией. Для Telegram аватарка канала уже
+    // пришла в составе feed (см. TelegramGate.fetch) — второй запрос не нужен.
     const faviconUrl =
-      type === 'RSS' ? await this.faviconGate.fetch(new URL(canonicalUrl).origin) : null;
+      type === 'RSS'
+        ? await this.faviconGate.fetch(new URL(canonicalUrl).origin)
+        : (feed.photoUrl ?? null);
 
     return this.prisma.$transaction(async (tx) => {
       const source = await this.sourcesRepository.createWithinTransaction(tx, {
