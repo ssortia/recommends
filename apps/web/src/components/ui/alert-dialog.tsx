@@ -16,7 +16,7 @@ const AlertDialogOverlay = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Overlay>
 >(({ className, ...props }, ref) => (
   <AlertDialogPrimitive.Overlay
-    className={cn('fixed inset-0 z-50 bg-black/80', className)}
+    className={cn('fixed inset-0 z-50 bg-black/50', className)}
     {...props}
     ref={ref}
   />
@@ -48,7 +48,13 @@ AlertDialogHeader.displayName = 'AlertDialogHeader';
 
 const AlertDialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn('flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2', className)}
+    // gap вместо margin-утилит с sm:-вариантом: из-за порядка правил в собранном
+    // Tailwind-CSS `mt-2 sm:mt-0` не переопределялся на десктопе (не сбрасывался),
+    // из-за чего кнопки в футере были смещены по вертикали на 8px
+    className={cn(
+      'flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end',
+      className,
+    )}
     {...props}
   />
 );
@@ -92,7 +98,7 @@ const AlertDialogCancel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AlertDialogPrimitive.Cancel
     ref={ref}
-    className={cn(buttonVariants({ variant: 'outline' }), 'mt-2 sm:mt-0', className)}
+    className={cn(buttonVariants({ variant: 'outline' }), className)}
     {...props}
   />
 ));
