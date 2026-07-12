@@ -29,6 +29,16 @@ const FALLBACK_ICON_BY_TYPE: Record<SourceType, LucideIcon> = {
   TELEGRAM: Send,
 };
 
+// Подпись типа источника рядом с названием.
+const TYPE_LABEL: Record<SourceType, string> = {
+  RSS: 'RSS',
+  TELEGRAM: 'Telegram',
+};
+
+// h-11 (44px) — сумма высот строки названия (text-base/leading-6 = 24px) и ссылки
+// (text-sm/leading-5 = 20px), чтобы иконка визуально уравновешивала весь текстовый блок.
+const ICON_SIZE_CLASS = 'h-11 w-11 shrink-0';
+
 function SourceIcon({ faviconUrl, type }: { faviconUrl: string | null; type: SourceType }) {
   const [imageFailed, setImageFailed] = useState(false);
   const FallbackIcon = FALLBACK_ICON_BY_TYPE[type];
@@ -36,7 +46,7 @@ function SourceIcon({ faviconUrl, type }: { faviconUrl: string | null; type: Sou
   if (!faviconUrl || imageFailed) {
     return (
       <FallbackIcon
-        className="text-muted-foreground h-5 w-5 shrink-0"
+        className={`text-muted-foreground p-2 ${ICON_SIZE_CLASS}`}
         aria-hidden
         data-testid="source-icon-fallback"
       />
@@ -51,7 +61,7 @@ function SourceIcon({ faviconUrl, type }: { faviconUrl: string | null; type: Sou
       src={faviconUrl}
       alt=""
       data-testid="source-icon-favicon"
-      className="h-5 w-5 shrink-0 rounded-sm object-contain"
+      className={`rounded-md object-contain ${ICON_SIZE_CLASS}`}
       onError={() => setImageFailed(true)}
     />
   );
@@ -103,7 +113,12 @@ export function SourcesList() {
             <div className="flex items-center gap-3">
               <SourceIcon faviconUrl={entry.source.faviconUrl} type={entry.source.type} />
               <div>
-                <div className="font-medium">{entry.source.title}</div>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">{entry.source.title}</span>
+                  <span className="text-muted-foreground rounded-full border px-1.5 py-0.5 text-[10px] font-medium leading-none">
+                    {TYPE_LABEL[entry.source.type]}
+                  </span>
+                </div>
                 <div className="text-muted-foreground text-sm">{entry.source.url}</div>
               </div>
             </div>
