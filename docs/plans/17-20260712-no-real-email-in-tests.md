@@ -76,9 +76,9 @@ Unit-тесты (`mailer.service.spec.ts`, `auth.service.spec.ts`, `verification
 
 ### Task 3: Верификация приёмочных критериев
 
-- [ ] убедиться, что ни один тестовый прогон (unit + e2e) не может создать реальный SMTP-транспорт без явного `MAIL_TRANSPORT=smtp`
-- [ ] прогнать полный набор: `pnpm --filter @repo/api test` и `pnpm --filter @repo/api test:e2e`
-- [ ] убедиться, что за время работы над задачей не произошло реальной отправки писем (проверить логи/дашборд Resend, если есть доступ — иначе полагаться на код-ревью транспорт-логики)
+- [x] убедиться, что ни один тестовый прогон (unit + e2e) не может создать реальный SMTP-транспорт без явного `MAIL_TRANSPORT=smtp` (подтверждено код-ревью: `MailerService.onModuleInit` создаёт `smtp`-транспорт только при `env.MAIL_TRANSPORT === 'smtp'`, `test/setup-e2e.ts` принудительно ставит `MAIL_TRANSPORT=json` до `loadRootEnv()`, unit-тесты либо мокируют `MailerService`, либо сами задают `MAIL_TRANSPORT=json`)
+- [x] прогнать полный набор: `pnpm --filter @repo/api test` и `pnpm --filter @repo/api test:e2e` — оба зелёные (191/191 и 17/17 тестов)
+- [x] убедиться, что за время работы над задачей не произошло реальной отправки писем (verified via code review — доступа к дашборду Resend нет; ни один unit- или e2e-тест не может достичь пути `MAIL_TRANSPORT=smtp` без явного оверрайда, см. `setup-e2e.ts` и env-настройку unit-тестов)
 
 ### Task 4: [Final] Обновить документацию и завершить план
 
