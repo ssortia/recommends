@@ -69,10 +69,10 @@ Unit-тесты (`mailer.service.spec.ts`, `auth.service.spec.ts`, `verification
 
 - (только чтение/верификация, без изменений — либо точечные правки, если найдутся проблемы)
 
-- [ ] перепроверить `mailer.service.spec.ts`, `auth.service.spec.ts`, `verification.service.spec.ts`, `auth.controller.spec.ts`, `verified.guard.spec.ts` — убедиться, что ни один из них не инстанцирует реальный `MailerService` без мока и без `MAIL_TRANSPORT=json`
-- [ ] если найдётся тест, инстанцирующий реальный `MailerService` без защиты — исправить (замокать зависимость либо явно выставить `MAIL_TRANSPORT=json`)
-- [ ] запустить полный unit test-сьют `pnpm --filter @repo/api test` — все тесты зелёные
-- [ ] run tests — must pass before next task
+- [x] перепроверить `mailer.service.spec.ts`, `auth.service.spec.ts`, `verification.service.spec.ts`, `auth.controller.spec.ts`, `verified.guard.spec.ts` — убедиться, что ни один из них не инстанцирует реальный `MailerService` без мока и без `MAIL_TRANSPORT=json`
+- [x] если найдётся тест, инстанцирующий реальный `MailerService` без защиты — исправить (замокать зависимость либо явно выставить `MAIL_TRANSPORT=json`)
+- [x] запустить полный unit test-сьют `pnpm --filter @repo/api test` — все тесты зелёные
+- [x] run tests — must pass before next task
 
 ### Task 3: Верификация приёмочных критериев
 
