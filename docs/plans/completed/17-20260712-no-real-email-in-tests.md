@@ -82,9 +82,9 @@ Unit-тесты (`mailer.service.spec.ts`, `auth.service.spec.ts`, `verification
 
 ### Task 4: [Final] Обновить документацию и завершить план
 
-- [ ] проверить, требуется ли обновление `docs/guides/email-verification-and-password-reset.md` (упоминание тестовой изоляции транспорта) — обновить при необходимости
-- [ ] CLAUDE.md не требует изменений (новых паттернов не вводится)
-- [ ] переместить этот файл в `docs/plans/completed/`
+- [x] проверить, требуется ли обновление `docs/guides/email-verification-and-password-reset.md` (упоминание тестовой изоляции транспорта) — обновить при необходимости (добавлена короткая заметка про `setup-e2e.ts`)
+- [x] CLAUDE.md не требует изменений (новых паттернов не вводится)
+- [x] переместить этот файл в `docs/plans/completed/`
 
 ## Post-Completion
 
