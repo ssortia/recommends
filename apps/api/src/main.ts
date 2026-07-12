@@ -48,7 +48,7 @@ async function bootstrap() {
   });
 
   const config = new DocumentBuilder()
-    .setTitle('NexST API')
+    .setTitle('Curio API')
     .setDescription('NestJS + Next.js monorepo API')
     .setVersion('1.0')
     .addBearerAuth()

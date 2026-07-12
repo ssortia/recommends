@@ -5,7 +5,7 @@ import { Providers } from '@/components/providers';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'NexST',
+  title: 'Curio',
   description: 'NestJS + Next.js monorepo template',
 };
 

@@ -2,10 +2,9 @@ import { redirect } from 'next/navigation';
 
 import { EmailVerificationBanner } from '@/components/auth/email-verification-banner';
 import { RoleProvider } from '@/components/auth/role-provider';
-import { MainNav } from '@/components/main-nav';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { Header } from '@/components/header';
 
-import { auth, signOut } from '../../auth';
+import { auth } from '../../auth';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -17,31 +16,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <RoleProvider role={session.user.role}>
       <div className="bg-background min-h-screen">
-        <header className="border-b">
-          <div className="container mx-auto flex h-16 items-center justify-between px-4">
-            <div className="flex items-center gap-6">
-              <h1 className="text-xl font-semibold">NexST</h1>
-              <MainNav role={session.user.role} />
-            </div>
-            <div className="flex items-center gap-4">
-              <ThemeToggle />
-              <span className="text-muted-foreground text-sm">{session.user?.email}</span>
-              <form
-                action={async () => {
-                  'use server';
-                  await signOut({ redirectTo: '/login' });
-                }}
-              >
-                <button
-                  type="submit"
-                  className="text-muted-foreground hover:text-foreground cursor-pointer text-sm transition-colors"
-                >
-                  Выйти
-                </button>
-              </form>
-            </div>
-          </div>
-        </header>
+        <Header role={session.user.role} email={session.user?.email} />
         {!session.user.isEmailVerified && session.user.email && (
           <EmailVerificationBanner email={session.user.email} />
         )}

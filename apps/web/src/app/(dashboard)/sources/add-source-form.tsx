@@ -31,19 +31,23 @@ export function AddSourceForm() {
   }
 
   return (
-    <ZodForm schema={AddSourceSchema} onSubmit={onSubmit} className="flex items-start gap-3">
-      <div className="flex-1">
-        <TextField
-          name="url"
-          label="Источник"
-          placeholder="https://example.com/feed.xml или @channel"
-          required
-        />
-        {serverError && <p className="text-destructive mt-2 text-sm">{serverError}</p>}
+    // serverError вынесен из флекс-ряда с полем и кнопкой, чтобы его появление
+    // не сдвигало кнопку — items-end выравнивает кнопку только по высоте поля
+    <ZodForm schema={AddSourceSchema} onSubmit={onSubmit} className="space-y-2">
+      <div className="flex items-end gap-3">
+        <div className="flex-1">
+          <TextField
+            name="url"
+            label="Источник"
+            placeholder="https://example.com/feed.xml или @channel"
+            required
+          />
+        </div>
+        <Button type="submit" disabled={addSource.isPending}>
+          {addSource.isPending ? 'Добавление...' : 'Добавить'}
+        </Button>
       </div>
-      <Button type="submit" disabled={addSource.isPending} className="mt-6">
-        {addSource.isPending ? 'Добавление...' : 'Добавить'}
-      </Button>
+      {serverError && <p className="text-destructive text-sm">{serverError}</p>}
     </ZodForm>
   );
 }

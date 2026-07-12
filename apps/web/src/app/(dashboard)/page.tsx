@@ -96,7 +96,7 @@ export default async function DashboardPage() {
         <div className="space-y-1">
           <h2 className="text-3xl font-bold tracking-tight">Добро пожаловать, {name} 👋</h2>
           <p className="text-muted-foreground">
-            Это стартовый шаблон NexST. Подключи данные и начни строить продукт.
+            Это стартовый шаблон Curio. Подключи данные и начни строить продукт.
           </p>
         </div>
         <a

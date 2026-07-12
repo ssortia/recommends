@@ -15,6 +15,7 @@ export const SourceSchema = z.object({
   type: SourceTypeSchema,
   url: z.string(),
   title: z.string(),
+  faviconUrl: z.string().nullable(),
   lastFetchedAt: z.coerce.date().nullable(),
   createdAt: z.coerce.date(),
 });

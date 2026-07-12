@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from '../../../components/ui/card';
 
-export const metadata: Metadata = { title: 'Новый пароль | NexST' };
+export const metadata: Metadata = { title: 'Новый пароль | Curio' };
 
 export default async function ResetPasswordPage({
   searchParams,

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 import { VerifyEmailStatus } from '../../../components/auth/verify-email-status';
 
-export const metadata: Metadata = { title: 'Подтверждение email | NexST' };
+export const metadata: Metadata = { title: 'Подтверждение email | Curio' };
 
 export default async function VerifyEmailPage({
   searchParams,

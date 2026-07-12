@@ -15,6 +15,9 @@ export class SourceDto {
   title: string;
 
   @ApiProperty({ nullable: true })
+  faviconUrl: string | null;
+
+  @ApiProperty({ nullable: true })
   lastFetchedAt: Date | null;
 
   @ApiProperty()

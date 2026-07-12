@@ -7,6 +7,7 @@ import type { FeedItem } from './feed-item.interface';
 
 export interface TelegramFeed {
   title?: string;
+  photoUrl?: string;
   items: FeedItem[];
 }
 
@@ -45,6 +46,12 @@ export class TelegramGate {
 
       const title = $('.tgme_channel_info_header_title').first().text().trim() || undefined;
 
+      // Аватарка канала: <i class="tgme_page_photo_image"><img src="..."></i>; если фото не
+      // задано, Telegram рендерит вместо <img> цветной кружок с инициалами — src нет.
+      const photoUrl = this.toHttpUrl(
+        $('.tgme_channel_info_header .tgme_page_photo_image img').first().attr('src'),
+      );
+
       const items: FeedItem[] = $('.tgme_widget_message')
         .map((_, el) => {
           const $el = $(el);
@@ -65,10 +72,25 @@ export class TelegramGate {
         })
         .get();
 
-      return { title, items };
+      return { title, photoUrl, items };
     } catch (error) {
       this.logger.warn({ msg: 'Не удалось получить/распарсить Telegram-канал', username, error });
       return null;
+    }
+  }
+
+  // Допускает только http(s) — src аватарки всегда абсолютный URL с CDN Telegram,
+  // но на всякий случай проверяем протокол по аналогии с FaviconGate.
+  private toHttpUrl(src: string | undefined): string | undefined {
+    if (!src) {
+      return undefined;
+    }
+
+    try {
+      const url = new URL(src);
+      return url.protocol === 'http:' || url.protocol === 'https:' ? url.toString() : undefined;
+    } catch {
+      return undefined;
     }
   }
 }
