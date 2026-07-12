@@ -2,6 +2,7 @@ import { BadRequestException, ConflictException, NotFoundException } from '@nest
 import { Prisma } from '@prisma/client';
 
 import type { ArticlesRepository } from './articles.repository';
+import type { FaviconGate } from './favicon.gate';
 import type { RssGate } from './rss.gate';
 import type { SourcesRepository } from './sources.repository';
 import { SourcesService } from './sources.service';
@@ -20,6 +21,7 @@ describe('SourcesService', () => {
   let articlesRepository: { upsertMany: jest.Mock };
   let rssGate: { fetch: jest.Mock };
   let telegramGate: { fetch: jest.Mock };
+  let faviconGate: { fetch: jest.Mock };
   let service: SourcesService;
 
   beforeEach(() => {
@@ -38,6 +40,7 @@ describe('SourcesService', () => {
     articlesRepository = { upsertMany: jest.fn() };
     rssGate = { fetch: jest.fn() };
     telegramGate = { fetch: jest.fn() };
+    faviconGate = { fetch: jest.fn().mockResolvedValue(null) };
 
     service = new SourcesService(
       prisma as unknown as never,
@@ -46,6 +49,7 @@ describe('SourcesService', () => {
       articlesRepository as unknown as ArticlesRepository,
       rssGate as unknown as RssGate,
       telegramGate as unknown as TelegramGate,
+      faviconGate as unknown as FaviconGate,
     );
   });
 
@@ -112,6 +116,22 @@ describe('SourcesService', () => {
       expect(prisma.$transaction).not.toHaveBeenCalled();
     });
 
+    it('подставляет faviconUrl, полученный от FaviconGate по origin сайта (не URL фида)', async () => {
+      sourcesRepository.findByUrl.mockResolvedValue(null);
+      rssGate.fetch.mockResolvedValue({ title: 'Example Feed', items: [] });
+      faviconGate.fetch.mockResolvedValue('https://example.com/favicon.ico');
+      sourcesRepository.createWithinTransaction.mockResolvedValue({ id: 's1' });
+      articlesRepository.upsertMany.mockResolvedValue(0);
+
+      await service.addSource('u1', 'https://example.com/feed.xml');
+
+      expect(faviconGate.fetch).toHaveBeenCalledWith('https://example.com');
+      expect(sourcesRepository.createWithinTransaction).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ faviconUrl: 'https://example.com/favicon.ico' }),
+      );
+    });
+
     it('не оставляет частично созданных записей при сбое внутри транзакции', async () => {
       sourcesRepository.findByUrl.mockResolvedValue(null);
       rssGate.fetch.mockResolvedValue({ title: 'Example', items: [] });
@@ -133,6 +153,7 @@ describe('SourcesService', () => {
 
       expect(result).toEqual({ source: existingSource, articlesCount: 0 });
       expect(rssGate.fetch).not.toHaveBeenCalled();
+      expect(faviconGate.fetch).not.toHaveBeenCalled();
       expect(userSourcesRepository.create).toHaveBeenCalledWith('u2', 's1');
     });
 
@@ -181,6 +202,11 @@ describe('SourcesService', () => {
       expect(articlesRepository.upsertMany).toHaveBeenCalledWith(expect.anything(), 's2', [
         { guid: 'c/1' },
       ]);
+      expect(faviconGate.fetch).not.toHaveBeenCalled();
+      expect(sourcesRepository.createWithinTransaction).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ faviconUrl: null }),
+      );
     });
 
     it('использует @username как title, если канал не отдаёт title', async () => {

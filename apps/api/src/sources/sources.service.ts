@@ -9,6 +9,7 @@ import { Prisma, type Source, type SourceType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 import { ArticlesRepository } from './articles.repository';
+import { FaviconGate } from './favicon.gate';
 import type { FeedItem } from './feed-item.interface';
 import { RssGate } from './rss.gate';
 import { parseSourceInput } from './source-input.parser';
@@ -39,6 +40,7 @@ export class SourcesService {
     private readonly articlesRepository: ArticlesRepository,
     private readonly rssGate: RssGate,
     private readonly telegramGate: TelegramGate,
+    private readonly faviconGate: FaviconGate,
   ) {}
 
   async addSource(userId: string, input: string): Promise<AddSourceResult> {
@@ -93,12 +95,18 @@ export class SourcesService {
       throw new BadRequestException(notFoundMessage);
     }
 
+    // Favicon фетчится только для RSS (у Telegram-каналов нет классического favicon)
+    // и до открытия транзакции — сетевой запрос не должен выполняться под открытой БД-транзакцией.
+    const faviconUrl =
+      type === 'RSS' ? await this.faviconGate.fetch(new URL(canonicalUrl).origin) : null;
+
     return this.prisma.$transaction(async (tx) => {
       const source = await this.sourcesRepository.createWithinTransaction(tx, {
         type,
         url: canonicalUrl,
         title: feed.title ?? fallbackTitle,
         lastFetchedAt: new Date(),
+        faviconUrl,
       });
       await this.userSourcesRepository.create(userId, source.id, tx);
       const articlesCount = await this.articlesRepository.upsertMany(tx, source.id, feed.items);

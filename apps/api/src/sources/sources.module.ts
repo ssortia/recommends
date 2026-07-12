@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { ArticlesRepository } from './articles.repository';
+import { FaviconGate } from './favicon.gate';
 import { RssGate } from './rss.gate';
 import { SourcesController } from './sources.controller';
 import { SourcesRepository } from './sources.repository';
@@ -17,6 +18,7 @@ import { UserSourcesRepository } from './user-sources.repository';
     ArticlesRepository,
     RssGate,
     TelegramGate,
+    FaviconGate,
   ],
 })
 export class SourcesModule {}
