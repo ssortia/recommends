@@ -2,7 +2,10 @@
 
 import { type MouseEvent, useState } from 'react';
 
-import { Trash2 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import { Rss, Send, Trash2 } from 'lucide-react';
+
+import type { SourceType } from '@repo/types';
 
 import {
   AlertDialog,
@@ -18,6 +21,41 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
 import { useDeleteSource, useSources } from '../../../hooks/use-sources';
+
+// Иконка-заглушка по типу источника — используется, когда favicon не сохранён
+// или не загрузился (см. onError у <img> в SourceIcon).
+const FALLBACK_ICON_BY_TYPE: Record<SourceType, LucideIcon> = {
+  RSS: Rss,
+  TELEGRAM: Send,
+};
+
+function SourceIcon({ faviconUrl, type }: { faviconUrl: string | null; type: SourceType }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const FallbackIcon = FALLBACK_ICON_BY_TYPE[type];
+
+  if (!faviconUrl || imageFailed) {
+    return (
+      <FallbackIcon
+        className="text-muted-foreground h-5 w-5 shrink-0"
+        aria-hidden
+        data-testid="source-icon-fallback"
+      />
+    );
+  }
+
+  return (
+    // favicon-URL произвольного внешнего домена (сайт RSS-источника) — next/image требует
+    // заранее известный allowlist доменов, поэтому используем обычный <img>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={faviconUrl}
+      alt=""
+      data-testid="source-icon-favicon"
+      className="h-5 w-5 shrink-0 rounded-sm object-contain"
+      onError={() => setImageFailed(true)}
+    />
+  );
+}
 
 export function SourcesList() {
   const { data: entries = [], isLoading, isError } = useSources();
@@ -62,9 +100,12 @@ export function SourcesList() {
       {entries.map((entry) => (
         <Card key={entry.source.id}>
           <CardContent className="flex items-center justify-between py-4">
-            <div>
-              <div className="font-medium">{entry.source.title}</div>
-              <div className="text-muted-foreground text-sm">{entry.source.url}</div>
+            <div className="flex items-center gap-3">
+              <SourceIcon faviconUrl={entry.source.faviconUrl} type={entry.source.type} />
+              <div>
+                <div className="font-medium">{entry.source.title}</div>
+                <div className="text-muted-foreground text-sm">{entry.source.url}</div>
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="text-muted-foreground text-xs">
