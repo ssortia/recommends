@@ -37,7 +37,12 @@ test.describe('Описание интересов', () => {
 
     const textarea = page.getByLabel('Описание интересов');
     await textarea.fill('Люблю статьи про космос и биологию');
-    await page.getByRole('button', { name: 'Сохранить' }).click();
+    await Promise.all([
+      page.waitForResponse(
+        (res) => res.url().includes('/preferences') && res.request().method() === 'PATCH',
+      ),
+      page.getByRole('button', { name: 'Сохранить' }).click(),
+    ]);
 
     await expect(textarea).toHaveValue('Люблю статьи про космос и биологию');
 
@@ -55,16 +60,55 @@ test.describe('Описание интересов', () => {
 
     const textarea = page.getByLabel('Описание интересов');
     await textarea.fill('Временное описание');
-    await page.getByRole('button', { name: 'Сохранить' }).click();
+    await Promise.all([
+      page.waitForResponse(
+        (res) => res.url().includes('/preferences') && res.request().method() === 'PATCH',
+      ),
+      page.getByRole('button', { name: 'Сохранить' }).click(),
+    ]);
     await expect(textarea).toHaveValue('Временное описание');
 
     await textarea.fill('');
-    await page.getByRole('button', { name: 'Сохранить' }).click();
+    await Promise.all([
+      page.waitForResponse(
+        (res) => res.url().includes('/preferences') && res.request().method() === 'PATCH',
+      ),
+      page.getByRole('button', { name: 'Сохранить' }).click(),
+    ]);
     await expect(textarea).toHaveValue('');
 
     await page.reload();
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByLabel('Описание интересов')).toHaveValue('');
+  });
+
+  test('показывает сообщение об ошибке, если загрузка описания интересов не удалась', async ({
+    page,
+  }) => {
+    await loginAsVerifiedUser(page);
+
+    // Перехватываем GET-запрос и эмулируем сбой сервера, чтобы проверить путь ошибки usePreferences().
+    await page.route('**/preferences', async (route) => {
+      if (route.request().method() === 'GET') {
+        await route.fulfill({
+          status: 500,
+          contentType: 'application/json',
+          body: JSON.stringify({ statusCode: 500, message: 'Internal server error' }),
+        });
+        return;
+      }
+      await route.continue();
+    });
+
+    await gotoSources(page);
+
+    // usePreferences() по умолчанию делает несколько повторных попыток (react-query retry)
+    // перед тем как isError станет true, поэтому таймаут ожидания увеличен.
+    await expect(
+      page.getByText(
+        'Не удалось загрузить описание интересов. Обновите страницу, чтобы попробовать снова.',
+      ),
+    ).toBeVisible({ timeout: 15000 });
   });
 });

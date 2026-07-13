@@ -33,7 +33,9 @@ describe('PreferencesController', () => {
       const response = await controller.update({ interestsDescription: 'наука' }, user);
 
       expect(response).toEqual(result);
-      expect(preferencesService.update).toHaveBeenCalledWith('u1', 'наука');
+      expect(preferencesService.update).toHaveBeenCalledWith('u1', {
+        interestsDescription: 'наука',
+      });
     });
 
     it('передаёт null для сброса поля', async () => {
@@ -43,7 +45,19 @@ describe('PreferencesController', () => {
       const response = await controller.update({ interestsDescription: null }, user);
 
       expect(response).toEqual(result);
-      expect(preferencesService.update).toHaveBeenCalledWith('u1', null);
+      expect(preferencesService.update).toHaveBeenCalledWith('u1', {
+        interestsDescription: null,
+      });
+    });
+
+    it('не передаёт ключ interestsDescription, если он отсутствует в теле запроса (партиальный PATCH)', async () => {
+      const result = { interestsDescription: 'прежнее значение' };
+      preferencesService.update.mockResolvedValue(result);
+
+      const response = await controller.update({}, user);
+
+      expect(response).toEqual(result);
+      expect(preferencesService.update).toHaveBeenCalledWith('u1', {});
     });
   });
 });

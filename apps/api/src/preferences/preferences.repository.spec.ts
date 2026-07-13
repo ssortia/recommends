@@ -45,7 +45,7 @@ describe('PreferencesRepository', () => {
     const created = { id: 'p1', userId: 'u1', interestsDescription: 'спорт' };
     prisma.userPreferences.upsert.mockResolvedValue(created);
 
-    const result = await repository.upsert('u1', 'спорт');
+    const result = await repository.upsert('u1', { interestsDescription: 'спорт' });
 
     expect(result).toEqual(created);
     expect(prisma.userPreferences.upsert).toHaveBeenCalledWith({
@@ -59,13 +59,41 @@ describe('PreferencesRepository', () => {
     const updated = { id: 'p1', userId: 'u1', interestsDescription: null };
     prisma.userPreferences.upsert.mockResolvedValue(updated);
 
-    const result = await repository.upsert('u1', null);
+    const result = await repository.upsert('u1', { interestsDescription: null });
 
     expect(result).toEqual(updated);
     expect(prisma.userPreferences.upsert).toHaveBeenCalledWith({
       where: { userId: 'u1' },
       create: { userId: 'u1', interestsDescription: null },
       update: { interestsDescription: null },
+    });
+  });
+
+  it('upsert передаёт пустую строку как есть (не превращает в null)', async () => {
+    const updated = { id: 'p1', userId: 'u1', interestsDescription: '' };
+    prisma.userPreferences.upsert.mockResolvedValue(updated);
+
+    const result = await repository.upsert('u1', { interestsDescription: '' });
+
+    expect(result).toEqual(updated);
+    expect(prisma.userPreferences.upsert).toHaveBeenCalledWith({
+      where: { userId: 'u1' },
+      create: { userId: 'u1', interestsDescription: '' },
+      update: { interestsDescription: '' },
+    });
+  });
+
+  it('upsert не трогает поле при update, если ключ interestsDescription отсутствует (партиальный PATCH)', async () => {
+    const unchanged = { id: 'p1', userId: 'u1', interestsDescription: 'прежнее значение' };
+    prisma.userPreferences.upsert.mockResolvedValue(unchanged);
+
+    const result = await repository.upsert('u1', {});
+
+    expect(result).toEqual(unchanged);
+    expect(prisma.userPreferences.upsert).toHaveBeenCalledWith({
+      where: { userId: 'u1' },
+      create: { userId: 'u1', interestsDescription: null },
+      update: {},
     });
   });
 });

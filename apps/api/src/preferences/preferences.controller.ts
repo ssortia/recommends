@@ -28,6 +28,11 @@ export class PreferencesController {
   @ApiOperation({ summary: 'Update current user preferences' })
   @ApiOkResponse({ type: PreferencesResponseDto })
   async update(@Body() dto: UpdatePreferencesDto, @CurrentUser() user: User) {
-    return this.preferencesService.update(user.id, dto.interestsDescription);
+    // Отсутствие ключа в теле запроса (партиальный PATCH) отличаем от явного null,
+    // чтобы будущие поля DTO (#13/#14) не затирались при обновлении только одного из них.
+    const data =
+      'interestsDescription' in dto ? { interestsDescription: dto.interestsDescription } : {};
+
+    return this.preferencesService.update(user.id, data);
   }
 }

@@ -39,10 +39,25 @@ describe('PreferencesService', () => {
         interestsDescription: 'наука',
       } as UserPreferences);
 
-      const result = await service.update('u1', 'наука');
+      const result = await service.update('u1', { interestsDescription: 'наука' });
 
       expect(result).toEqual({ interestsDescription: 'наука' });
-      expect(preferencesRepository.upsert).toHaveBeenCalledWith('u1', 'наука');
+      expect(preferencesRepository.upsert).toHaveBeenCalledWith('u1', {
+        interestsDescription: 'наука',
+      });
+    });
+
+    it('передаёт пустую строку репозиторию как есть (не превращает в null)', async () => {
+      preferencesRepository.upsert.mockResolvedValue({
+        interestsDescription: '',
+      } as UserPreferences);
+
+      const result = await service.update('u1', { interestsDescription: '' });
+
+      expect(result).toEqual({ interestsDescription: '' });
+      expect(preferencesRepository.upsert).toHaveBeenCalledWith('u1', {
+        interestsDescription: '',
+      });
     });
 
     it('сбрасывает поле в null при явной передаче null', async () => {
@@ -50,20 +65,22 @@ describe('PreferencesService', () => {
         interestsDescription: null,
       } as UserPreferences);
 
-      const result = await service.update('u1', null);
+      const result = await service.update('u1', { interestsDescription: null });
 
       expect(result).toEqual({ interestsDescription: null });
-      expect(preferencesRepository.upsert).toHaveBeenCalledWith('u1', null);
+      expect(preferencesRepository.upsert).toHaveBeenCalledWith('u1', {
+        interestsDescription: null,
+      });
     });
 
-    it('трактует undefined как сброс в null', async () => {
+    it('не трогает поле, если ключ interestsDescription отсутствует в data (партиальный PATCH)', async () => {
       preferencesRepository.upsert.mockResolvedValue({
-        interestsDescription: null,
+        interestsDescription: 'прежнее значение',
       } as UserPreferences);
 
-      await service.update('u1', undefined);
+      await service.update('u1', {});
 
-      expect(preferencesRepository.upsert).toHaveBeenCalledWith('u1', null);
+      expect(preferencesRepository.upsert).toHaveBeenCalledWith('u1', {});
     });
   });
 });

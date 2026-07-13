@@ -16,11 +16,23 @@ export class PreferencesRepository {
     return this.prisma.userPreferences.findUnique({ where: { userId } });
   }
 
-  upsert(userId: string, interestsDescription: string | null): Promise<UserPreferences> {
+  /**
+   * `data` — частичное обновление: если ключ `interestsDescription` отсутствует,
+   * поле не трогается при update (партиальная PATCH-семантика), а при create
+   * трактуется как отсутствие значения (null).
+   */
+  upsert(userId: string, data: { interestsDescription?: string | null }): Promise<UserPreferences> {
+    const hasInterestsDescription = 'interestsDescription' in data;
+
     return this.prisma.userPreferences.upsert({
       where: { userId },
-      create: { userId, interestsDescription },
-      update: { interestsDescription },
+      create: {
+        userId,
+        interestsDescription: hasInterestsDescription ? (data.interestsDescription ?? null) : null,
+      },
+      update: hasInterestsDescription
+        ? { interestsDescription: data.interestsDescription ?? null }
+        : {},
     });
   }
 }

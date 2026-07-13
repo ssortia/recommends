@@ -11,7 +11,7 @@ import { TextareaField, ZodForm } from '@ssortia/shadcn-zod-bridge';
 import { usePreferences, useUpdatePreferences } from '../../../hooks/use-preferences';
 
 export function InterestsDescriptionForm() {
-  const { data: preferences, isLoading } = usePreferences();
+  const { data: preferences, isLoading, isError } = usePreferences();
   const updatePreferences = useUpdatePreferences();
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -27,6 +27,14 @@ export function InterestsDescriptionForm() {
         setServerError('Не удалось сохранить описание интересов');
       }
     }
+  }
+
+  if (isError) {
+    return (
+      <p className="text-destructive text-sm">
+        Не удалось загрузить описание интересов. Обновите страницу, чтобы попробовать снова.
+      </p>
+    );
   }
 
   // Форма монтируется только после загрузки текущих предпочтений, чтобы

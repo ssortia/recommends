@@ -19,13 +19,12 @@ export class PreferencesService {
 
   async update(
     userId: string,
-    interestsDescription: string | null | undefined,
+    data: { interestsDescription?: string | null },
   ): Promise<PreferencesResult> {
-    // undefined (поле не передано в запросе) трактуется так же, как явный сброс в null.
-    const preferences = await this.preferencesRepository.upsert(
-      userId,
-      interestsDescription ?? null,
-    );
+    // Партиальный PATCH: отсутствие ключа в data (поле не передано в запросе)
+    // не трогает текущее значение; передаётся дальше репозиторию как есть —
+    // см. PreferencesRepository.upsert.
+    const preferences = await this.preferencesRepository.upsert(userId, data);
 
     return { interestsDescription: preferences.interestsDescription };
   }
