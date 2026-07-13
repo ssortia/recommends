@@ -80,11 +80,11 @@
 - Modify: `apps/api/prisma/schema.prisma`
 - Create: `apps/api/prisma/migrations/<timestamp>_add_user_preferences/migration.sql` (генерируется автоматически)
 
-- [ ] добавить модель `UserPreferences` в `schema.prisma` (см. Technical Details) с уникальным `userId` и `onDelete: Cascade`
-- [ ] добавить обратную связь `preferences UserPreferences?` в модель `User`
-- [ ] сгенерировать миграцию: `pnpm --filter @repo/api db:migrate` (dev-миграция с именем `add_user_preferences`)
-- [ ] сгенерировать Prisma Client: `pnpm --filter @repo/api db:generate`
-- [ ] запустить существующий тест-сьют API, убедиться, что ничего не сломалось: `pnpm --filter @repo/api test`
+- [x] добавить модель `UserPreferences` в `schema.prisma` (см. Technical Details) с уникальным `userId` и `onDelete: Cascade`
+- [x] добавить обратную связь `preferences UserPreferences?` в модель `User`
+- [x] сгенерировать миграцию: `pnpm --filter @repo/api db:migrate` (dev-миграция с именем `add_user_preferences`)
+- [x] сгенерировать Prisma Client: `pnpm --filter @repo/api db:generate`
+- [x] запустить существующий тест-сьют API, убедиться, что ничего не сломалось: `pnpm --filter @repo/api test`
 
 ### Task 2: Типы в `@repo/types`
 

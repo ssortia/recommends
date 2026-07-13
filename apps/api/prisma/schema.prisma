@@ -24,6 +24,7 @@ model User {
 
   verificationTokens VerificationToken[]
   userSources        UserSource[]
+  preferences        UserPreferences?
 
   @@index([role])
   @@index([createdAt])
@@ -134,4 +135,19 @@ model Article {
   @@unique([sourceId, externalId])
   @@index([publishedAt])
   @@map("articles")
+}
+
+// Описание интересов пользователя (свободный текст) для будущего AI-подбора статей (#13, #14).
+// Отдельная таблица 1:1 с User — под неё в будущем лягут дополнительные preference-поля.
+model UserPreferences {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  interestsDescription String? @db.VarChar(1000)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_preferences")
 }
