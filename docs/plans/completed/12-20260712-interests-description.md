@@ -172,9 +172,9 @@
 
 ### Task 8: [Final] Обновить документацию
 
-- [ ] добавить ADR `docs/adr/014-user-preferences.md` — фиксирует решение о выделении `UserPreferences` в отдельную таблицу под будущие preference-поля (#13, #14), обновить индекс в `docs/adr/README.md`
-- [ ] обновить README.md, если список фич в шаблоне требует упоминания preferences
-- [ ] переместить этот план в `docs/plans/completed/`
+- [x] добавить ADR `docs/adr/014-user-preferences.md` — фиксирует решение о выделении `UserPreferences` в отдельную таблицу под будущие preference-поля (#13, #14), обновить индекс в `docs/adr/README.md`
+- [x] обновить README.md, если список фич в шаблоне требует упоминания preferences
+- [x] переместить этот план в `docs/plans/completed/`
 
 ## Post-Completion
 
