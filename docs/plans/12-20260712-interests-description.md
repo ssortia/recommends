@@ -141,9 +141,9 @@
 - Create: `apps/web/src/api/preferences.api.ts`
 - Create: `apps/web/src/hooks/use-preferences.ts`
 
-- [ ] реализовать `preferencesApi.get(accessToken)` и `preferencesApi.update(interestsDescription, accessToken)` (аналог `sourcesApi`)
-- [ ] реализовать `usePreferences()` (useQuery) и `useUpdatePreferences()` (useMutation с `invalidateQueries(['preferences'])`), по аналогии с `use-sources.ts`
-- [ ] запустить typecheck: `pnpm --filter @repo/web typecheck` (unit-тестов на web в проекте нет — см. Testing Strategy, проверка функциональности — в e2e-шаге Task 7)
+- [x] реализовать `preferencesApi.get(accessToken)` и `preferencesApi.update(interestsDescription, accessToken)` (аналог `sourcesApi`)
+- [x] реализовать `usePreferences()` (useQuery) и `useUpdatePreferences()` (useMutation с `invalidateQueries(['preferences'])`), по аналогии с `use-sources.ts`
+- [x] запустить typecheck: `pnpm --filter @repo/web typecheck` (unit-тестов на web в проекте нет — см. Testing Strategy, проверка функциональности — в e2e-шаге Task 7)
 
 ### Task 6: Frontend — форма описания интересов на странице `/sources`
 
