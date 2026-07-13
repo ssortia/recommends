@@ -80,11 +80,11 @@
 - Modify: `apps/api/prisma/schema.prisma`
 - Create: `apps/api/prisma/migrations/<timestamp>_add_user_preferences/migration.sql` (генерируется автоматически)
 
-- [ ] добавить модель `UserPreferences` в `schema.prisma` (см. Technical Details) с уникальным `userId` и `onDelete: Cascade`
-- [ ] добавить обратную связь `preferences UserPreferences?` в модель `User`
-- [ ] сгенерировать миграцию: `pnpm --filter @repo/api db:migrate` (dev-миграция с именем `add_user_preferences`)
-- [ ] сгенерировать Prisma Client: `pnpm --filter @repo/api db:generate`
-- [ ] запустить существующий тест-сьют API, убедиться, что ничего не сломалось: `pnpm --filter @repo/api test`
+- [x] добавить модель `UserPreferences` в `schema.prisma` (см. Technical Details) с уникальным `userId` и `onDelete: Cascade`
+- [x] добавить обратную связь `preferences UserPreferences?` в модель `User`
+- [x] сгенерировать миграцию: `pnpm --filter @repo/api db:migrate` (dev-миграция с именем `add_user_preferences`)
+- [x] сгенерировать Prisma Client: `pnpm --filter @repo/api db:generate`
+- [x] запустить существующий тест-сьют API, убедиться, что ничего не сломалось: `pnpm --filter @repo/api test`
 
 ### Task 2: Типы в `@repo/types`
 
@@ -94,11 +94,11 @@
 - Create: `packages/types/src/preferences.spec.ts`
 - Modify: `packages/types/src/index.ts`
 
-- [ ] создать `PreferencesSchema` (`interestsDescription: z.string().nullable()`) и тип `Preferences`
-- [ ] создать `UpdatePreferencesSchema` (`interestsDescription: z.string().max(1000).nullable().optional()`) и тип `UpdatePreferencesInput`
-- [ ] реэкспортировать новый модуль из `packages/types/src/index.ts` (`export * from './preferences';`)
-- [ ] написать тесты на валидацию схем (успешные случаи: пустая строка, `null`, обычный текст; ошибочные: текст длиннее 1000 символов), по аналогии с `sources.spec.ts`
-- [ ] запустить тесты: `pnpm --filter @repo/types test`
+- [x] создать `PreferencesSchema` (`interestsDescription: z.string().nullable()`) и тип `Preferences`
+- [x] создать `UpdatePreferencesSchema` (`interestsDescription: z.string().max(1000).nullable().optional()`) и тип `UpdatePreferencesInput`
+- [x] реэкспортировать новый модуль из `packages/types/src/index.ts` (`export * from './preferences';`)
+- [x] написать тесты на валидацию схем (успешные случаи: пустая строка, `null`, обычный текст; ошибочные: текст длиннее 1000 символов), по аналогии с `sources.spec.ts`
+- [x] запустить тесты: `pnpm --filter @repo/types test`
 
 ### Task 3: Backend — репозиторий `PreferencesRepository`
 
@@ -107,11 +107,11 @@
 - Create: `apps/api/src/preferences/preferences.repository.ts`
 - Create: `apps/api/src/preferences/preferences.repository.spec.ts`
 
-- [ ] реализовать `findByUserId(userId)` — `prisma.userPreferences.findUnique({ where: { userId } })`
-- [ ] реализовать `upsert(userId, data)` — `prisma.userPreferences.upsert(...)` с `create`/`update` по `interestsDescription`
-- [ ] написать тесты на `findByUserId` (найдена запись / записи нет)
-- [ ] написать тесты на `upsert` (создание новой записи / обновление существующей)
-- [ ] запустить тесты — должны пройти перед следующей задачей
+- [x] реализовать `findByUserId(userId)` — `prisma.userPreferences.findUnique({ where: { userId } })`
+- [x] реализовать `upsert(userId, data)` — `prisma.userPreferences.upsert(...)` с `create`/`update` по `interestsDescription`
+- [x] написать тесты на `findByUserId` (найдена запись / записи нет)
+- [x] написать тесты на `upsert` (создание новой записи / обновление существующей)
+- [x] запустить тесты — должны пройти перед следующей задачей
 
 ### Task 4: Backend — сервис и контроллер `preferences`
 
@@ -125,14 +125,14 @@
 - Create: `apps/api/src/preferences/preferences.module.ts`
 - Modify: `apps/api/src/app.module.ts`
 
-- [ ] создать `UpdatePreferencesDto` с `@IsOptional() @IsString() @MaxLength(1000)` для `interestsDescription` (допускает `null`/пустую строку) и `@ApiProperty`
-- [ ] реализовать `PreferencesService.get(userId)` — вернуть `{ interestsDescription: null }`, если записи нет
-- [ ] реализовать `PreferencesService.update(userId, dto)` — вызвать `upsert` репозитория
-- [ ] реализовать `PreferencesController` с `GET /preferences` и `PATCH /preferences` под `JwtAuthGuard` + `VerifiedGuard`, со Swagger-декораторами (`@ApiTags`, `@ApiOperation`, `@ApiBearerAuth`, `@ApiOkResponse`) и response DTO, по образцу `UsersController.me`
-- [ ] зарегистрировать `PreferencesModule` в `app.module.ts`
-- [ ] написать тесты сервиса (get с записью/без, update создаёт/обновляет)
-- [ ] написать тесты контроллера (успешные ответы, форма запроса)
-- [ ] запустить тесты — должны пройти перед следующей задачей
+- [x] создать `UpdatePreferencesDto` с `@IsOptional() @IsString() @MaxLength(1000)` для `interestsDescription` (допускает `null`/пустую строку) и `@ApiProperty`
+- [x] реализовать `PreferencesService.get(userId)` — вернуть `{ interestsDescription: null }`, если записи нет
+- [x] реализовать `PreferencesService.update(userId, dto)` — вызвать `upsert` репозитория
+- [x] реализовать `PreferencesController` с `GET /preferences` и `PATCH /preferences` под `JwtAuthGuard` + `VerifiedGuard`, со Swagger-декораторами (`@ApiTags`, `@ApiOperation`, `@ApiBearerAuth`, `@ApiOkResponse`) и response DTO, по образцу `UsersController.me`
+- [x] зарегистрировать `PreferencesModule` в `app.module.ts`
+- [x] написать тесты сервиса (get с записью/без, update создаёт/обновляет)
+- [x] написать тесты контроллера (успешные ответы, форма запроса)
+- [x] запустить тесты — должны пройти перед следующей задачей
 
 ### Task 5: Frontend — API-клиент и хуки
 
@@ -141,9 +141,9 @@
 - Create: `apps/web/src/api/preferences.api.ts`
 - Create: `apps/web/src/hooks/use-preferences.ts`
 
-- [ ] реализовать `preferencesApi.get(accessToken)` и `preferencesApi.update(interestsDescription, accessToken)` (аналог `sourcesApi`)
-- [ ] реализовать `usePreferences()` (useQuery) и `useUpdatePreferences()` (useMutation с `invalidateQueries(['preferences'])`), по аналогии с `use-sources.ts`
-- [ ] запустить typecheck: `pnpm --filter @repo/web typecheck` (unit-тестов на web в проекте нет — см. Testing Strategy, проверка функциональности — в e2e-шаге Task 7)
+- [x] реализовать `preferencesApi.get(accessToken)` и `preferencesApi.update(interestsDescription, accessToken)` (аналог `sourcesApi`)
+- [x] реализовать `usePreferences()` (useQuery) и `useUpdatePreferences()` (useMutation с `invalidateQueries(['preferences'])`), по аналогии с `use-sources.ts`
+- [x] запустить typecheck: `pnpm --filter @repo/web typecheck` (unit-тестов на web в проекте нет — см. Testing Strategy, проверка функциональности — в e2e-шаге Task 7)
 
 ### Task 6: Frontend — форма описания интересов на странице `/sources`
 
@@ -152,10 +152,10 @@
 - Create: `apps/web/src/app/(dashboard)/sources/interests-description-form.tsx`
 - Modify: `apps/web/src/app/(dashboard)/sources/page.tsx`
 
-- [ ] реализовать `InterestsDescriptionForm` (textarea через `ZodForm` + `UpdatePreferencesSchema`), с предзаполнением текущим значением из `usePreferences()`
-- [ ] обработать серверные ошибки валидации (превышение длины) аналогично `AddSourceForm`
-- [ ] разместить форму над `SourcesList`/`AddSourceForm` на странице `/sources`
-- [ ] запустить lint и typecheck: `pnpm --filter @repo/web lint && pnpm --filter @repo/web typecheck`
+- [x] реализовать `InterestsDescriptionForm` (textarea через `ZodForm` + `UpdatePreferencesSchema`), с предзаполнением текущим значением из `usePreferences()`
+- [x] обработать серверные ошибки валидации (превышение длины) аналогично `AddSourceForm`
+- [x] разместить форму над `SourcesList`/`AddSourceForm` на странице `/sources`
+- [x] запустить lint и typecheck: `pnpm --filter @repo/web lint && pnpm --filter @repo/web typecheck`
 
 ### Task 7: Verify acceptance criteria и e2e-тесты
 
@@ -163,18 +163,18 @@
 
 - Create: `apps/web/e2e/interests-description.spec.ts`
 
-- [ ] написать e2e-тест (Playwright, по аналогии с `apps/web/e2e/sources.spec.ts`): ввод описания интересов, сохранение, проверка персистентности после перезагрузки страницы
-- [ ] написать e2e-тест на пустое значение: поле необязательное, сброс текста сохраняется
-- [ ] запустить e2e: `pnpm --filter @repo/web test:e2e`
-- [ ] проверить: изменения сохраняются (persist в БД) и доступны при повторной загрузке страницы
-- [ ] запустить полный набор unit/backend-тестов: `pnpm test`
-- [ ] запустить lint и typecheck по всему монорепо: `pnpm lint && pnpm typecheck`
+- [x] написать e2e-тест (Playwright, по аналогии с `apps/web/e2e/sources.spec.ts`): ввод описания интересов, сохранение, проверка персистентности после перезагрузки страницы
+- [x] написать e2e-тест на пустое значение: поле необязательное, сброс текста сохраняется
+- [x] запустить e2e: `pnpm --filter @repo/web test:e2e`
+- [x] проверить: изменения сохраняются (persist в БД) и доступны при повторной загрузке страницы
+- [x] запустить полный набор unit/backend-тестов: `pnpm test`
+- [x] запустить lint и typecheck по всему монорепо: `pnpm lint && pnpm typecheck`
 
 ### Task 8: [Final] Обновить документацию
 
-- [ ] добавить ADR `docs/adr/014-user-preferences.md` — фиксирует решение о выделении `UserPreferences` в отдельную таблицу под будущие preference-поля (#13, #14), обновить индекс в `docs/adr/README.md`
-- [ ] обновить README.md, если список фич в шаблоне требует упоминания preferences
-- [ ] переместить этот план в `docs/plans/completed/`
+- [x] добавить ADR `docs/adr/014-user-preferences.md` — фиксирует решение о выделении `UserPreferences` в отдельную таблицу под будущие preference-поля (#13, #14), обновить индекс в `docs/adr/README.md`
+- [x] обновить README.md, если список фич в шаблоне требует упоминания preferences
+- [x] переместить этот план в `docs/plans/completed/`
 
 ## Post-Completion
 
