@@ -107,11 +107,11 @@
 - Create: `apps/api/src/preferences/preferences.repository.ts`
 - Create: `apps/api/src/preferences/preferences.repository.spec.ts`
 
-- [ ] реализовать `findByUserId(userId)` — `prisma.userPreferences.findUnique({ where: { userId } })`
-- [ ] реализовать `upsert(userId, data)` — `prisma.userPreferences.upsert(...)` с `create`/`update` по `interestsDescription`
-- [ ] написать тесты на `findByUserId` (найдена запись / записи нет)
-- [ ] написать тесты на `upsert` (создание новой записи / обновление существующей)
-- [ ] запустить тесты — должны пройти перед следующей задачей
+- [x] реализовать `findByUserId(userId)` — `prisma.userPreferences.findUnique({ where: { userId } })`
+- [x] реализовать `upsert(userId, data)` — `prisma.userPreferences.upsert(...)` с `create`/`update` по `interestsDescription`
+- [x] написать тесты на `findByUserId` (найдена запись / записи нет)
+- [x] написать тесты на `upsert` (создание новой записи / обновление существующей)
+- [x] запустить тесты — должны пройти перед следующей задачей
 
 ### Task 4: Backend — сервис и контроллер `preferences`
 
