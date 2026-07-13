@@ -152,10 +152,10 @@
 - Create: `apps/web/src/app/(dashboard)/sources/interests-description-form.tsx`
 - Modify: `apps/web/src/app/(dashboard)/sources/page.tsx`
 
-- [ ] реализовать `InterestsDescriptionForm` (textarea через `ZodForm` + `UpdatePreferencesSchema`), с предзаполнением текущим значением из `usePreferences()`
-- [ ] обработать серверные ошибки валидации (превышение длины) аналогично `AddSourceForm`
-- [ ] разместить форму над `SourcesList`/`AddSourceForm` на странице `/sources`
-- [ ] запустить lint и typecheck: `pnpm --filter @repo/web lint && pnpm --filter @repo/web typecheck`
+- [x] реализовать `InterestsDescriptionForm` (textarea через `ZodForm` + `UpdatePreferencesSchema`), с предзаполнением текущим значением из `usePreferences()`
+- [x] обработать серверные ошибки валидации (превышение длины) аналогично `AddSourceForm`
+- [x] разместить форму над `SourcesList`/`AddSourceForm` на странице `/sources`
+- [x] запустить lint и typecheck: `pnpm --filter @repo/web lint && pnpm --filter @repo/web typecheck`
 
 ### Task 7: Verify acceptance criteria и e2e-тесты
 
