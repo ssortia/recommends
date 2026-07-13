@@ -2,12 +2,14 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 /**
- * Подгружает корневой .env в process.env перед запуском e2e-сьютов.
+ * Подгружает .env в process.env перед запуском e2e-сьютов.
  * Без этого AppModule -> getEnv() падает с process.exit(1) на отсутствии
  * DATABASE_URL/JWT-секретов. Парсим вручную, чтобы не тянуть dotenv в зависимости.
+ *
+ * envPath параметризован (по умолчанию — корневой .env), чтобы этот же код
+ * можно было прогнать в unit-тесте с фейковым файлом (см. setup-e2e.e2e-spec.ts).
  */
-function loadRootEnv(): void {
-  const envPath = resolve(__dirname, '../../../.env');
+export function loadRootEnv(envPath: string = resolve(__dirname, '../../../.env')): void {
   let content: string;
   try {
     content = readFileSync(envPath, 'utf8');
@@ -31,5 +33,10 @@ function loadRootEnv(): void {
     process.env[key] ??= value;
   }
 }
+
+// Принудительно фиксируем json-транспорт почты до загрузки .env — единая защита
+// от реальной отправки писем во всех e2e-сьютах (loadRootEnv не перезаписывает
+// уже заданные переменные благодаря ??=).
+process.env['MAIL_TRANSPORT'] = 'json';
 
 loadRootEnv();

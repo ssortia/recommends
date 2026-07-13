@@ -58,10 +58,10 @@ Unit-тесты (`mailer.service.spec.ts`, `auth.service.spec.ts`, `verification
 - Modify: `apps/api/test/setup-e2e.ts`
 - Modify: `apps/api/test/email-flow.e2e-spec.ts`
 
-- [ ] в `apps/api/test/setup-e2e.ts` добавить `process.env['MAIL_TRANSPORT'] = 'json';` перед вызовом `loadRootEnv()`, с кратким комментарием почему (единая защита от реальной отправки писем во всех e2e-сьютах)
-- [ ] убрать `process.env['MAIL_TRANSPORT'] = 'json';` и связанный комментарий из шапки `apps/api/test/email-flow.e2e-spec.ts` (стал избыточным дублированием)
-- [ ] прогнать `pnpm --filter @repo/api test:e2e` — все существующие e2e-сьюты должны остаться зелёными
-- [ ] run tests — must pass before next task
+- [x] в `apps/api/test/setup-e2e.ts` добавить `process.env['MAIL_TRANSPORT'] = 'json';` перед вызовом `loadRootEnv()`, с кратким комментарием почему (единая защита от реальной отправки писем во всех e2e-сьютах)
+- [x] убрать `process.env['MAIL_TRANSPORT'] = 'json';` и связанный комментарий из шапки `apps/api/test/email-flow.e2e-spec.ts` (стал избыточным дублированием)
+- [x] прогнать `pnpm --filter @repo/api test:e2e` — все существующие e2e-сьюты должны остаться зелёными
+- [x] run tests — must pass before next task
 
 ### Task 2: Ревизия unit-тестов auth/verification на реальные вызовы nodemailer
 
@@ -69,22 +69,22 @@ Unit-тесты (`mailer.service.spec.ts`, `auth.service.spec.ts`, `verification
 
 - (только чтение/верификация, без изменений — либо точечные правки, если найдутся проблемы)
 
-- [ ] перепроверить `mailer.service.spec.ts`, `auth.service.spec.ts`, `verification.service.spec.ts`, `auth.controller.spec.ts`, `verified.guard.spec.ts` — убедиться, что ни один из них не инстанцирует реальный `MailerService` без мока и без `MAIL_TRANSPORT=json`
-- [ ] если найдётся тест, инстанцирующий реальный `MailerService` без защиты — исправить (замокать зависимость либо явно выставить `MAIL_TRANSPORT=json`)
-- [ ] запустить полный unit test-сьют `pnpm --filter @repo/api test` — все тесты зелёные
-- [ ] run tests — must pass before next task
+- [x] перепроверить `mailer.service.spec.ts`, `auth.service.spec.ts`, `verification.service.spec.ts`, `auth.controller.spec.ts`, `verified.guard.spec.ts` — убедиться, что ни один из них не инстанцирует реальный `MailerService` без мока и без `MAIL_TRANSPORT=json`
+- [x] если найдётся тест, инстанцирующий реальный `MailerService` без защиты — исправить (замокать зависимость либо явно выставить `MAIL_TRANSPORT=json`)
+- [x] запустить полный unit test-сьют `pnpm --filter @repo/api test` — все тесты зелёные
+- [x] run tests — must pass before next task
 
 ### Task 3: Верификация приёмочных критериев
 
-- [ ] убедиться, что ни один тестовый прогон (unit + e2e) не может создать реальный SMTP-транспорт без явного `MAIL_TRANSPORT=smtp`
-- [ ] прогнать полный набор: `pnpm --filter @repo/api test` и `pnpm --filter @repo/api test:e2e`
-- [ ] убедиться, что за время работы над задачей не произошло реальной отправки писем (проверить логи/дашборд Resend, если есть доступ — иначе полагаться на код-ревью транспорт-логики)
+- [x] убедиться, что ни один тестовый прогон (unit + e2e) не может создать реальный SMTP-транспорт без явного `MAIL_TRANSPORT=smtp` (подтверждено код-ревью: `MailerService.onModuleInit` создаёт `smtp`-транспорт только при `env.MAIL_TRANSPORT === 'smtp'`, `test/setup-e2e.ts` принудительно ставит `MAIL_TRANSPORT=json` до `loadRootEnv()`, unit-тесты либо мокируют `MailerService`, либо сами задают `MAIL_TRANSPORT=json`)
+- [x] прогнать полный набор: `pnpm --filter @repo/api test` и `pnpm --filter @repo/api test:e2e` — оба зелёные (191/191 и 17/17 тестов)
+- [x] убедиться, что за время работы над задачей не произошло реальной отправки писем (verified via code review — доступа к дашборду Resend нет; ни один unit- или e2e-тест не может достичь пути `MAIL_TRANSPORT=smtp` без явного оверрайда, см. `setup-e2e.ts` и env-настройку unit-тестов)
 
 ### Task 4: [Final] Обновить документацию и завершить план
 
-- [ ] проверить, требуется ли обновление `docs/guides/email-verification-and-password-reset.md` (упоминание тестовой изоляции транспорта) — обновить при необходимости
-- [ ] CLAUDE.md не требует изменений (новых паттернов не вводится)
-- [ ] переместить этот файл в `docs/plans/completed/`
+- [x] проверить, требуется ли обновление `docs/guides/email-verification-and-password-reset.md` (упоминание тестовой изоляции транспорта) — обновить при необходимости (добавлена короткая заметка про `setup-e2e.ts`)
+- [x] CLAUDE.md не требует изменений (новых паттернов не вводится)
+- [x] переместить этот файл в `docs/plans/completed/`
 
 ## Post-Completion
 
