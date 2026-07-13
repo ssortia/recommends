@@ -125,14 +125,14 @@
 - Create: `apps/api/src/preferences/preferences.module.ts`
 - Modify: `apps/api/src/app.module.ts`
 
-- [ ] создать `UpdatePreferencesDto` с `@IsOptional() @IsString() @MaxLength(1000)` для `interestsDescription` (допускает `null`/пустую строку) и `@ApiProperty`
-- [ ] реализовать `PreferencesService.get(userId)` — вернуть `{ interestsDescription: null }`, если записи нет
-- [ ] реализовать `PreferencesService.update(userId, dto)` — вызвать `upsert` репозитория
-- [ ] реализовать `PreferencesController` с `GET /preferences` и `PATCH /preferences` под `JwtAuthGuard` + `VerifiedGuard`, со Swagger-декораторами (`@ApiTags`, `@ApiOperation`, `@ApiBearerAuth`, `@ApiOkResponse`) и response DTO, по образцу `UsersController.me`
-- [ ] зарегистрировать `PreferencesModule` в `app.module.ts`
-- [ ] написать тесты сервиса (get с записью/без, update создаёт/обновляет)
-- [ ] написать тесты контроллера (успешные ответы, форма запроса)
-- [ ] запустить тесты — должны пройти перед следующей задачей
+- [x] создать `UpdatePreferencesDto` с `@IsOptional() @IsString() @MaxLength(1000)` для `interestsDescription` (допускает `null`/пустую строку) и `@ApiProperty`
+- [x] реализовать `PreferencesService.get(userId)` — вернуть `{ interestsDescription: null }`, если записи нет
+- [x] реализовать `PreferencesService.update(userId, dto)` — вызвать `upsert` репозитория
+- [x] реализовать `PreferencesController` с `GET /preferences` и `PATCH /preferences` под `JwtAuthGuard` + `VerifiedGuard`, со Swagger-декораторами (`@ApiTags`, `@ApiOperation`, `@ApiBearerAuth`, `@ApiOkResponse`) и response DTO, по образцу `UsersController.me`
+- [x] зарегистрировать `PreferencesModule` в `app.module.ts`
+- [x] написать тесты сервиса (get с записью/без, update создаёт/обновляет)
+- [x] написать тесты контроллера (успешные ответы, форма запроса)
+- [x] запустить тесты — должны пройти перед следующей задачей
 
 ### Task 5: Frontend — API-клиент и хуки
 
