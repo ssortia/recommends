@@ -94,11 +94,11 @@
 - Create: `packages/types/src/preferences.spec.ts`
 - Modify: `packages/types/src/index.ts`
 
-- [ ] создать `PreferencesSchema` (`interestsDescription: z.string().nullable()`) и тип `Preferences`
-- [ ] создать `UpdatePreferencesSchema` (`interestsDescription: z.string().max(1000).nullable().optional()`) и тип `UpdatePreferencesInput`
-- [ ] реэкспортировать новый модуль из `packages/types/src/index.ts` (`export * from './preferences';`)
-- [ ] написать тесты на валидацию схем (успешные случаи: пустая строка, `null`, обычный текст; ошибочные: текст длиннее 1000 символов), по аналогии с `sources.spec.ts`
-- [ ] запустить тесты: `pnpm --filter @repo/types test`
+- [x] создать `PreferencesSchema` (`interestsDescription: z.string().nullable()`) и тип `Preferences`
+- [x] создать `UpdatePreferencesSchema` (`interestsDescription: z.string().max(1000).nullable().optional()`) и тип `UpdatePreferencesInput`
+- [x] реэкспортировать новый модуль из `packages/types/src/index.ts` (`export * from './preferences';`)
+- [x] написать тесты на валидацию схем (успешные случаи: пустая строка, `null`, обычный текст; ошибочные: текст длиннее 1000 символов), по аналогии с `sources.spec.ts`
+- [x] запустить тесты: `pnpm --filter @repo/types test`
 
 ### Task 3: Backend — репозиторий `PreferencesRepository`
 
