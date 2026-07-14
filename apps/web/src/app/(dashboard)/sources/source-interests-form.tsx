@@ -7,6 +7,7 @@ import { ApiError } from '@/lib/api';
 import type { UpdateSourcePreferenceInput } from '@repo/types';
 import { UpdateSourcePreferenceSchema } from '@repo/types';
 import { TextareaField, ZodForm } from '@ssortia/shadcn-zod-bridge';
+import { toast } from 'sonner';
 
 import { useSourcePreference, useUpdateSourcePreference } from '../../../hooks/use-preferences';
 
@@ -25,6 +26,7 @@ export function SourceInterestsForm({ sourceId }: SourceInterestsFormProps) {
 
     try {
       await updatePreference.mutateAsync(data.interestsDescription);
+      toast.success('Описание интересов сохранено');
     } catch (err) {
       if (err instanceof ApiError && err.status === 400) {
         setServerError('Описание слишком длинное: максимум 1000 символов');
