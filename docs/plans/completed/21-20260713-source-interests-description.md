@@ -257,10 +257,10 @@ export type UpdateSourcePreferenceInput = z.infer<typeof UpdateSourcePreferenceS
 - Modify: `docs/adr/README.md`
 - Modify: `README.md` (если там перечислены фичи preferences/sources)
 
-- [ ] написать ADR-015 по шаблону `docs/adr/README.md`: контекст (зависимость от ADR-014), рассмотренные варианты (колонка в `user_preferences` vs поле на `UserSource` vs отдельная таблица `source_preferences`), решение, последствия (в т.ч. поведение при отписке/повторной подписке); отдельно зафиксировать осознанный выбор единственного числа `SourcePreference` (вместо множественного `UserPreferences` у эталона #12) — так естественнее читается тип связи `SourcePreference[]`
-- [ ] добавить строку в индекс `docs/adr/README.md`
-- [ ] обновить список фич в `README.md`, если там отражены preferences-возможности
-- [ ] переместить этот файл в `docs/plans/completed/`
+- [x] написать ADR-015 по шаблону `docs/adr/README.md`: контекст (зависимость от ADR-014), рассмотренные варианты (колонка в `user_preferences` vs поле на `UserSource` vs отдельная таблица `source_preferences`), решение, последствия (в т.ч. поведение при отписке/повторной подписке); отдельно зафиксировать осознанный выбор единственного числа `SourcePreference` (вместо множественного `UserPreferences` у эталона #12) — так естественнее читается тип связи `SourcePreference[]`
+- [x] добавить строку в индекс `docs/adr/README.md`
+- [x] обновить список фич в `README.md`, если там отражены preferences-возможности
+- [x] переместить этот файл в `docs/plans/completed/`
 
 ## Post-Completion
 
