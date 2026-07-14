@@ -152,11 +152,11 @@ export type UpdateSourcePreferenceInput = z.infer<typeof UpdateSourcePreferenceS
 - Create: `apps/api/src/preferences/source-preferences.repository.ts`
 - Create: `apps/api/src/preferences/source-preferences.repository.spec.ts`
 
-- [ ] реализовать `findByUserAndSource(userId, sourceId)` — `findUnique` по составному ключу
-- [ ] реализовать `upsert(userId, sourceId, data)` — партиальный PATCH, по образцу `PreferencesRepository.upsert` (наличие ключа `interestsDescription` в `data` отличаем от его отсутствия)
-- [ ] написать тесты на `findByUserAndSource` (найдена/не найдена)
-- [ ] написать тесты на `upsert` (создание записи, обновление, partial-семантика — data без ключа не трогает существующее значение)
-- [ ] run tests - must pass before next task
+- [x] реализовать `findByUserAndSource(userId, sourceId)` — `findUnique` по составному ключу
+- [x] реализовать `upsert(userId, sourceId, data)` — партиальный PATCH, по образцу `PreferencesRepository.upsert` (наличие ключа `interestsDescription` в `data` отличаем от его отсутствия)
+- [x] написать тесты на `findByUserAndSource` (найдена/не найдена)
+- [x] написать тесты на `upsert` (создание записи, обновление, partial-семантика — data без ключа не трогает существующее значение)
+- [x] run tests - must pass before next task
 
 ### Task 3: Расширение SourcesModule для экспорта UserSourcesRepository
 
