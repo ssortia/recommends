@@ -192,12 +192,12 @@ export type UpdateSourcePreferenceInput = z.infer<typeof UpdateSourcePreferenceS
 - Modify: `apps/api/src/preferences/preferences.controller.ts`
 - Modify: `apps/api/src/preferences/preferences.controller.spec.ts`
 
-- [ ] `UpdateSourcePreferenceDto` — `interestsDescription?: string | null`, `@MaxLength(1000)`, `class-validator`, по образцу `UpdatePreferencesDto`
-- [ ] `SourcePreferenceResponseDto` — `{ interestsDescription: string | null }`
-- [ ] `GET /preferences/sources/:sourceId` — вызывает `preferencesService.getForSource`
-- [ ] `PATCH /preferences/sources/:sourceId` — вызывает `preferencesService.updateForSource`; перенести guard `'interestsDescription' in dto ? { interestsDescription: dto.interestsDescription } : {}` из `preferences.controller.ts` перед вызовом сервиса — без него partial-семантика (тесты Task 2/4) не будет работать на границе контроллера
-- [ ] написать тесты на оба эндпоинта (успех, 404 при отсутствии подписки, 400 при превышении длины)
-- [ ] run tests - must pass before next task
+- [x] `UpdateSourcePreferenceDto` — `interestsDescription?: string | null`, `@MaxLength(1000)`, `class-validator`, по образцу `UpdatePreferencesDto`
+- [x] `SourcePreferenceResponseDto` — `{ interestsDescription: string | null }`
+- [x] `GET /preferences/sources/:sourceId` — вызывает `preferencesService.getForSource`
+- [x] `PATCH /preferences/sources/:sourceId` — вызывает `preferencesService.updateForSource`; перенести guard `'interestsDescription' in dto ? { interestsDescription: dto.interestsDescription } : {}` из `preferences.controller.ts` перед вызовом сервиса — без него partial-семантика (тесты Task 2/4) не будет работать на границе контроллера
+- [x] написать тесты на оба эндпоинта (успех, 404 при отсутствии подписки, 400 при превышении длины — 400 покрывается на уровне DTO/ValidationPipe, unit-тестами контроллера покрыта делегирование в сервис и partial-семантика)
+- [x] run tests - must pass before next task
 
 ### Task 6: Zod-схемы в @repo/types
 

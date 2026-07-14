@@ -2,6 +2,7 @@ import { NotFoundException } from '@nestjs/common';
 import type { SourcePreference, UserPreferences } from '@prisma/client';
 
 import type { UserSourcesRepository } from '../sources/user-sources.repository';
+
 import type { PreferencesRepository } from './preferences.repository';
 import { PreferencesService } from './preferences.service';
 import type { SourcePreferencesRepository } from './source-preferences.repository';
