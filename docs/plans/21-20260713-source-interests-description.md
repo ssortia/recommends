@@ -176,12 +176,12 @@ export type UpdateSourcePreferenceInput = z.infer<typeof UpdateSourcePreferenceS
 - Modify: `apps/api/src/preferences/preferences.service.ts`
 - Modify: `apps/api/src/preferences/preferences.service.spec.ts`
 
-- [ ] импортировать `SourcesModule` в `PreferencesModule`, зарегистрировать `SourcePreferencesRepository` в providers
-- [ ] добавить `getForSource(userId, sourceId)`: проверить подписку через `UserSourcesRepository.exists` (иначе `NotFoundException`), затем прочитать `SourcePreferencesRepository.findByUserAndSource` (лениво → `null`)
-- [ ] добавить `updateForSource(userId, sourceId, data)`: та же проверка подписки, затем `SourcePreferencesRepository.upsert`
-- [ ] написать тесты на `getForSource` (есть подписка + запись, есть подписка без записи → null, нет подписки → 404)
-- [ ] написать тесты на `updateForSource` (успешное сохранение, partial-семантика, нет подписки → 404)
-- [ ] run tests - must pass before next task
+- [x] импортировать `SourcesModule` в `PreferencesModule`, зарегистрировать `SourcePreferencesRepository` в providers
+- [x] добавить `getForSource(userId, sourceId)`: проверить подписку через `UserSourcesRepository.exists` (иначе `NotFoundException`), затем прочитать `SourcePreferencesRepository.findByUserAndSource` (лениво → `null`)
+- [x] добавить `updateForSource(userId, sourceId, data)`: та же проверка подписки, затем `SourcePreferencesRepository.upsert`
+- [x] написать тесты на `getForSource` (есть подписка + запись, есть подписка без записи → null, нет подписки → 404)
+- [x] написать тесты на `updateForSource` (успешное сохранение, partial-семантика, нет подписки → 404)
+- [x] run tests - must pass before next task
 
 ### Task 5: PreferencesController — эндпоинты + DTO
 
