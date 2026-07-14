@@ -20,5 +20,6 @@ import { UserSourcesRepository } from './user-sources.repository';
     TelegramGate,
     FaviconGate,
   ],
+  exports: [UserSourcesRepository],
 })
 export class SourcesModule {}

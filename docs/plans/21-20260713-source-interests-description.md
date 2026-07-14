@@ -164,9 +164,9 @@ export type UpdateSourcePreferenceInput = z.infer<typeof UpdateSourcePreferenceS
 
 - Modify: `apps/api/src/sources/sources.module.ts`
 
-- [ ] добавить `exports: [UserSourcesRepository]` в `SourcesModule`
-- [ ] проверить существующие тесты `sources.module` (если есть) не сломались — иначе smoke: `pnpm --filter @repo/api build`
-- [ ] run tests - must pass before next task
+- [x] добавить `exports: [UserSourcesRepository]` в `SourcesModule`
+- [x] проверить существующие тесты `sources.module` (если есть) не сломались — иначе smoke: `pnpm --filter @repo/api build` (спека `sources.module` в проекте нет, выполнен smoke-build)
+- [x] run tests - must pass before next task
 
 ### Task 4: PreferencesService — методы для per-source описания
 
