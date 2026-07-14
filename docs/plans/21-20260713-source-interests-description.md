@@ -217,12 +217,12 @@ export type UpdateSourcePreferenceInput = z.infer<typeof UpdateSourcePreferenceS
 - Modify: `apps/web/src/api/preferences.api.ts`
 - Modify: `apps/web/src/hooks/use-preferences.ts`
 
-- [ ] `preferencesApi.getForSource(sourceId, accessToken)` → `GET /preferences/sources/:sourceId`
-- [ ] `preferencesApi.updateForSource(sourceId, interestsDescription, accessToken)` → `PATCH /preferences/sources/:sourceId`
-- [ ] `useSourcePreference(sourceId)` — `useQuery`, `queryKey: ['preferences', 'source', sourceId]`, `enabled` по наличию `accessToken` и `sourceId`
-- [ ] `useUpdateSourcePreference(sourceId)` — `useMutation`, инвалидация `['preferences', 'source', sourceId]` в `onSuccess`
-- [ ] unit-тестов для web нет по конвенции проекта (в `apps/web` отсутствует test-инфраструктура — только Playwright e2e), покрытие даёт Task 9
-- [ ] run tests - must pass before next task
+- [x] `preferencesApi.getForSource(sourceId, accessToken)` → `GET /preferences/sources/:sourceId`
+- [x] `preferencesApi.updateForSource(sourceId, interestsDescription, accessToken)` → `PATCH /preferences/sources/:sourceId`
+- [x] `useSourcePreference(sourceId)` — `useQuery`, `queryKey: ['preferences', 'source', sourceId]`, `enabled` по наличию `accessToken` и `sourceId`
+- [x] `useUpdateSourcePreference(sourceId)` — `useMutation`, инвалидация `['preferences', 'source', sourceId]` в `onSuccess`
+- [x] unit-тестов для web нет по конвенции проекта (в `apps/web` отсутствует test-инфраструктура — только Playwright e2e), покрытие даёт Task 9
+- [x] run tests - must pass before next task (typecheck и lint пройдены; отдельного unit test suite для web нет)
 
 ### Task 8: UI — инлайн-описание интересов в карточке источника
 
