@@ -205,10 +205,10 @@ export type UpdateSourcePreferenceInput = z.infer<typeof UpdateSourcePreferenceS
 
 - Modify: `packages/types/src/preferences.ts`
 
-- [ ] добавить `SourcePreferenceSchema`/`SourcePreference` и `UpdateSourcePreferenceSchema`/`UpdateSourcePreferenceInput` (см. Technical Details)
-- [ ] проверить, что схемы экспортируются из `packages/types/src/index.ts` (если там есть явный re-export списка)
-- [ ] пересобрать пакет: `pnpm --filter @repo/types build`
-- [ ] typecheck пакета: `pnpm --filter @repo/types typecheck`
+- [x] добавить `SourcePreferenceSchema`/`SourcePreference` и `UpdateSourcePreferenceSchema`/`UpdateSourcePreferenceInput` (см. Technical Details)
+- [x] проверить, что схемы экспортируются из `packages/types/src/index.ts` (там `export * from './preferences'` — явного списка нет, новые схемы экспортируются автоматически)
+- [x] пересобрать пакет: `pnpm --filter @repo/types build`
+- [x] typecheck пакета: `pnpm --filter @repo/types typecheck`
 
 ### Task 7: Web API-клиент и хуки
 
