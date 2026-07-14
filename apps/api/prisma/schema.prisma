@@ -25,6 +25,7 @@ model User {
   verificationTokens VerificationToken[]
   userSources        UserSource[]
   preferences        UserPreferences?
+  sourcePreferences  SourcePreference[]
 
   @@index([role])
   @@index([createdAt])
@@ -101,6 +102,7 @@ model Source {
 
   subscriptions UserSource[]
   articles      Article[]
+  preferences   SourcePreference[]
 
   @@map("sources")
 }
@@ -150,4 +152,23 @@ model UserPreferences {
   updatedAt DateTime @updatedAt
 
   @@map("user_preferences")
+}
+
+// Описание интересов пользователя индивидуально для конкретного источника (#21) — имеет приоритет
+// над общим UserPreferences.interestsDescription при будущей AI-оценке релевантности (см. ADR-015).
+// FK на Source (не на UserSource): при отписке запись не удаляется каскадно — повторная подписка
+// на тот же источник восстанавливает ранее сохранённое описание.
+model SourcePreference {
+  userId   String
+  sourceId String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  source   Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  interestsDescription String? @db.VarChar(1000)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([userId, sourceId])
+  @@map("source_preferences")
 }

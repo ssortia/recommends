@@ -139,11 +139,11 @@ export type UpdateSourcePreferenceInput = z.infer<typeof UpdateSourcePreferenceS
 - Modify: `apps/api/prisma/schema.prisma`
 - Create: `apps/api/prisma/migrations/<timestamp>_add_source_preferences/migration.sql` (генерируется)
 
-- [ ] добавить модель `SourcePreference` в `schema.prisma` (см. Technical Details)
-- [ ] добавить обратные связи `sourcePreferences`/`preferences` в модели `User` и `Source`
-- [ ] сгенерировать миграцию: `pnpm --filter @repo/api db:migrate`
-- [ ] сгенерировать Prisma Client: `pnpm --filter @repo/api db:generate`
-- [ ] проверить, что миграция применяется на чистой БД без ошибок
+- [x] добавить модель `SourcePreference` в `schema.prisma` (см. Technical Details)
+- [x] добавить обратные связи `sourcePreferences`/`preferences` в модели `User` и `Source`
+- [x] сгенерировать миграцию: `pnpm --filter @repo/api db:migrate`
+- [x] сгенерировать Prisma Client: `pnpm --filter @repo/api db:generate`
+- [x] проверить, что миграция применяется на чистой БД без ошибок
 
 ### Task 2: SourcePreferencesRepository
 
