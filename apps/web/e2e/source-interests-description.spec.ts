@@ -235,4 +235,33 @@ test.describe('Индивидуальное описание интересов 
       'Интересы для источника B',
     );
   });
+
+  test('показывает сообщение о превышении длины при 400-ответе API', async ({ page }) => {
+    await loginAsVerifiedUser(page);
+    await gotoSources(page);
+    await addSource(page, feedUrlA, 'E2E Source A');
+
+    const card = sourceCard(page, 'E2E Source A');
+    await card.getByRole('button', { name: 'Интересы' }).click();
+
+    // Клиентская Zod-схема (max(1000)) не пускает такое значение до сабмита, поэтому
+    // 400-ветка эмулируется перехватом PATCH-запроса — сама обработка ApiError с
+    // status === 400 в SourceInterestsForm остаётся боевой.
+    await page.route('**/preferences/sources/**', (route) => {
+      if (route.request().method() === 'PATCH') {
+        return route.fulfill({
+          status: 400,
+          contentType: 'application/json',
+          body: JSON.stringify({ statusCode: 400, message: 'Validation failed' }),
+        });
+      }
+      return route.continue();
+    });
+
+    const textarea = card.getByLabel('Интересы для этого источника');
+    await textarea.fill('Слишком длинное описание для теста 400-ошибки');
+    await card.getByRole('button', { name: 'Сохранить' }).click();
+
+    await expect(card.getByText('Описание слишком длинное: максимум 1000 символов')).toBeVisible();
+  });
 });

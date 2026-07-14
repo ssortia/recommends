@@ -12,6 +12,16 @@ import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 import { UpdateSourcePreferenceDto } from './dto/update-source-preference.dto';
 import { PreferencesService } from './preferences.service';
 
+/**
+ * Отличает отсутствие ключа в теле партиального PATCH-запроса от явного null,
+ * чтобы будущие поля DTO не затирались при обновлении только одного из них.
+ */
+function partialInterestsUpdate(dto: { interestsDescription?: string | null }): {
+  interestsDescription?: string | null;
+} {
+  return 'interestsDescription' in dto ? { interestsDescription: dto.interestsDescription } : {};
+}
+
 @ApiTags('preferences')
 @Controller('preferences')
 @UseGuards(JwtAuthGuard, VerifiedGuard)
@@ -30,12 +40,7 @@ export class PreferencesController {
   @ApiOperation({ summary: 'Update current user preferences' })
   @ApiOkResponse({ type: PreferencesResponseDto })
   async update(@Body() dto: UpdatePreferencesDto, @CurrentUser() user: User) {
-    // Отсутствие ключа в теле запроса (партиальный PATCH) отличаем от явного null,
-    // чтобы будущие поля DTO (#13/#14) не затирались при обновлении только одного из них.
-    const data =
-      'interestsDescription' in dto ? { interestsDescription: dto.interestsDescription } : {};
-
-    return this.preferencesService.update(user.id, data);
+    return this.preferencesService.update(user.id, partialInterestsUpdate(dto));
   }
 
   @Get('sources/:sourceId')
@@ -53,11 +58,6 @@ export class PreferencesController {
     @Body() dto: UpdateSourcePreferenceDto,
     @CurrentUser() user: User,
   ) {
-    // Отсутствие ключа в теле запроса (партиальный PATCH) отличаем от явного null —
-    // см. аналогичный комментарий в update() выше.
-    const data =
-      'interestsDescription' in dto ? { interestsDescription: dto.interestsDescription } : {};
-
-    return this.preferencesService.updateForSource(user.id, sourceId, data);
+    return this.preferencesService.updateForSource(user.id, sourceId, partialInterestsUpdate(dto));
   }
 }

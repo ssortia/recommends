@@ -121,4 +121,69 @@ describe('Preferences (e2e)', () => {
     const getRes = await request(app.getHttpServer()).get('/preferences').expect(200);
     expect(getRes.body).toEqual({ interestsDescription: 'сохранённое значение' });
   });
+
+  describe('/preferences/sources/:sourceId', () => {
+    const sourceId = `source-preferences-${suffix}`;
+    const otherSourceId = `source-preferences-other-${suffix}`;
+
+    beforeAll(async () => {
+      await prisma.source.createMany({
+        data: [
+          { id: sourceId, type: 'RSS', url: `https://example.com/${sourceId}.xml`, title: 'S1' },
+          {
+            id: otherSourceId,
+            type: 'RSS',
+            url: `https://example.com/${otherSourceId}.xml`,
+            title: 'S2',
+          },
+        ],
+      });
+      // Подписка только на sourceId — otherSourceId остаётся неподписанным для 404-кейса.
+      await prisma.userSource.create({ data: { userId, sourceId } });
+    });
+
+    afterAll(async () => {
+      await prisma.sourcePreference.deleteMany({ where: { userId } });
+      await prisma.userSource.deleteMany({ where: { userId } });
+      await prisma.source.deleteMany({ where: { id: { in: [sourceId, otherSourceId] } } });
+    });
+
+    it('GET возвращает 404, если пользователь не подписан на источник', async () => {
+      await request(app.getHttpServer()).get(`/preferences/sources/${otherSourceId}`).expect(404);
+    });
+
+    it('PATCH возвращает 404, если пользователь не подписан на источник', async () => {
+      await request(app.getHttpServer())
+        .patch(`/preferences/sources/${otherSourceId}`)
+        .send({ interestsDescription: 'ok' })
+        .expect(404);
+    });
+
+    it('GET возвращает interestsDescription: null для подписанного источника без записи', async () => {
+      const res = await request(app.getHttpServer())
+        .get(`/preferences/sources/${sourceId}`)
+        .expect(200);
+      expect(res.body).toEqual({ interestsDescription: null });
+    });
+
+    it('PATCH с текстом длиннее 1000 символов отклоняется ValidationPipe с 400', async () => {
+      await request(app.getHttpServer())
+        .patch(`/preferences/sources/${sourceId}`)
+        .send({ interestsDescription: 'a'.repeat(1001) })
+        .expect(400);
+    });
+
+    it('PATCH с валидным текстом создаёт запись и возвращает её', async () => {
+      const res = await request(app.getHttpServer())
+        .patch(`/preferences/sources/${sourceId}`)
+        .send({ interestsDescription: 'только про этот источник' })
+        .expect(200);
+      expect(res.body).toEqual({ interestsDescription: 'только про этот источник' });
+
+      const getRes = await request(app.getHttpServer())
+        .get(`/preferences/sources/${sourceId}`)
+        .expect(200);
+      expect(getRes.body).toEqual({ interestsDescription: 'только про этот источник' });
+    });
+  });
 });
