@@ -231,11 +231,11 @@ export type UpdateSourcePreferenceInput = z.infer<typeof UpdateSourcePreferenceS
 - Modify: `apps/web/src/app/(dashboard)/sources/sources-list.tsx`
 - Create: `apps/web/src/app/(dashboard)/sources/source-interests-form.tsx`
 
-- [ ] `SourceInterestsForm({ sourceId })` — по образцу `InterestsDescriptionForm`: `ZodForm` + `TextareaField` + `Button`, использует `useSourcePreference`/`useUpdateSourcePreference`
-- [ ] в `SourcesList` добавить кнопку-переключатель «Интересы» на каждой карточке источника, раскрывающую `SourceInterestsForm` для этого `source.id` (локальный `useState<Set<string>>` открытых карточек)
-- [ ] обработка ошибок сохранения (400 «слишком длинное описание», иное — общая ошибка), как в `InterestsDescriptionForm`
-- [ ] unit-тестов для web нет по конвенции проекта (в `apps/web` отсутствует test-инфраструктура — только Playwright e2e), покрытие даёт Task 9
-- [ ] run tests - must pass before next task
+- [x] `SourceInterestsForm({ sourceId })` — по образцу `InterestsDescriptionForm`: `ZodForm` + `TextareaField` + `Button`, использует `useSourcePreference`/`useUpdateSourcePreference`
+- [x] в `SourcesList` добавить кнопку-переключатель «Интересы» на каждой карточке источника, раскрывающую `SourceInterestsForm` для этого `source.id` (локальный `useState<Set<string>>` открытых карточек)
+- [x] обработка ошибок сохранения (400 «слишком длинное описание», иное — общая ошибка), как в `InterestsDescriptionForm`
+- [x] unit-тестов для web нет по конвенции проекта (в `apps/web` отсутствует test-инфраструктура — только Playwright e2e), покрытие даёт Task 9
+- [x] run tests - must pass before next task (typecheck и lint пройдены; `next build` падает только на отсутствующем `NEXTAUTH_SECRET` в окружении песочницы — не связано с изменениями)
 
 ### Task 9: E2E-тесты (последний пункт)
 

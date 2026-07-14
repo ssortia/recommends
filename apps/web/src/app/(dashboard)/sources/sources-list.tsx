@@ -3,7 +3,7 @@
 import { type MouseEvent, useState } from 'react';
 
 import type { LucideIcon } from 'lucide-react';
-import { Rss, Send, Trash2 } from 'lucide-react';
+import { MessageSquareText, Rss, Send, Trash2 } from 'lucide-react';
 
 import type { SourceType } from '@repo/types';
 
@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
 import { useDeleteSource, useSources } from '../../../hooks/use-sources';
+import { SourceInterestsForm } from './source-interests-form';
 
 // Иконка-заглушка по типу источника — используется, когда favicon не сохранён
 // или не загрузился (см. onError у <img> в SourceIcon).
@@ -72,8 +73,22 @@ export function SourcesList() {
   const deleteSource = useDeleteSource();
   // Id источника, для которого открыт диалог подтверждения удаления (null — диалог закрыт).
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  // Id источников, для которых раскрыта форма индивидуальных интересов.
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   const pendingEntry = entries.find((entry) => entry.source.id === pendingDeleteId);
+
+  const toggleExpanded = (sourceId: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(sourceId)) {
+        next.delete(sourceId);
+      } else {
+        next.add(sourceId);
+      }
+      return next;
+    });
+  };
 
   const handleConfirmDelete = (event: MouseEvent) => {
     // AlertDialogAction закрывает диалог автоматически по клику — предотвращаем это,
@@ -107,44 +122,64 @@ export function SourcesList() {
 
   return (
     <div className="space-y-3">
-      {entries.map((entry) => (
-        <Card key={entry.source.id}>
-          <CardContent className="flex items-center justify-between py-4">
-            <div className="flex items-center gap-3">
-              <SourceIcon faviconUrl={entry.source.faviconUrl} type={entry.source.type} />
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">{entry.source.title}</span>
-                  <span className="text-muted-foreground rounded-full border px-1.5 py-0.5 text-[10px] font-medium leading-none">
-                    {TYPE_LABEL[entry.source.type]}
-                  </span>
+      {entries.map((entry) => {
+        const isExpanded = expandedIds.has(entry.source.id);
+
+        return (
+          <Card key={entry.source.id}>
+            <CardContent className="py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <SourceIcon faviconUrl={entry.source.faviconUrl} type={entry.source.type} />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{entry.source.title}</span>
+                      <span className="text-muted-foreground rounded-full border px-1.5 py-0.5 text-[10px] font-medium leading-none">
+                        {TYPE_LABEL[entry.source.type]}
+                      </span>
+                    </div>
+                    <div className="text-muted-foreground text-sm">{entry.source.url}</div>
+                  </div>
                 </div>
-                <div className="text-muted-foreground text-sm">{entry.source.url}</div>
+                <div className="flex items-center gap-3">
+                  <div className="text-muted-foreground text-xs">
+                    {entry.source.lastFetchedAt
+                      ? `Обновлено: ${new Date(entry.source.lastFetchedAt).toLocaleString('ru-RU')}`
+                      : 'Ещё не синхронизировано'}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Интересы"
+                    aria-expanded={isExpanded}
+                    onClick={() => toggleExpanded(entry.source.id)}
+                  >
+                    <MessageSquareText className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Удалить подписку"
+                    onClick={() => {
+                      // Сбрасываем состояние прошлой мутации, иначе ошибка удаления
+                      // источника A задержится и покажется при открытии диалога для источника B.
+                      deleteSource.reset();
+                      setPendingDeleteId(entry.source.id);
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="text-muted-foreground text-xs">
-                {entry.source.lastFetchedAt
-                  ? `Обновлено: ${new Date(entry.source.lastFetchedAt).toLocaleString('ru-RU')}`
-                  : 'Ещё не синхронизировано'}
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Удалить подписку"
-                onClick={() => {
-                  // Сбрасываем состояние прошлой мутации, иначе ошибка удаления
-                  // источника A задержится и покажется при открытии диалога для источника B.
-                  deleteSource.reset();
-                  setPendingDeleteId(entry.source.id);
-                }}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+              {isExpanded && (
+                <div className="mt-4 border-t pt-4">
+                  <SourceInterestsForm sourceId={entry.source.id} />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })}
 
       <AlertDialog
         open={pendingDeleteId !== null}
