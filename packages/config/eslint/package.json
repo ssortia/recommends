@@ -10,13 +10,13 @@
     "./nextjs": "./nextjs.js"
   },
   "devDependencies": {
-    "@eslint/js": "^9.18.0",
-    "@typescript-eslint/eslint-plugin": "^8.20.0",
-    "@typescript-eslint/parser": "^8.20.0",
-    "eslint": "^9.18.0",
+    "@eslint/js": "^10.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.65.0",
+    "@typescript-eslint/parser": "^8.65.0",
+    "eslint": "^10.8.0",
     "eslint-plugin-import": "^2.31.0",
-    "eslint-config-next": "^15.1.6",
-    "globals": "^15.14.0",
-    "typescript-eslint": "^8.20.0"
+    "eslint-config-next": "^16.2.12",
+    "globals": "^17.8.0",
+    "typescript-eslint": "^8.65.0"
   }
 }
