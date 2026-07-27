@@ -7,6 +7,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider } from 'next-themes';
 
+import { Toaster } from '@/components/ui/sonner';
+
 export function Providers({ children }: { children: React.ReactNode }) {
   // useState гарантирует уникальный экземпляр QueryClient для каждого пользователя
   const [queryClient] = useState(
@@ -26,6 +28,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           disableTransitionOnChange
         >
           {children}
+          <Toaster />
         </ThemeProvider>
         <ReactQueryDevtools />
       </QueryClientProvider>
