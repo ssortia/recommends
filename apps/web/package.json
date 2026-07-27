@@ -38,18 +38,18 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.2.0",
-    "@playwright/test": "^1.60.0",
+    "@eslint/eslintrc": "^3.3.6",
+    "@playwright/test": "^1.62.0",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@tailwindcss/postcss": "^4.0.3",
-    "@tanstack/react-query-devtools": "^5.66.0",
-    "@types/node": "^22.12.0",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@tanstack/react-query-devtools": "^5.101.4",
+    "@types/node": "^26.1.1",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
-    "eslint": "^9.18.0",
-    "postcss": "^8.5.1",
-    "tailwindcss": "^4.0.3",
-    "typescript": "^5.7.3"
+    "eslint": "^10.8.0",
+    "postcss": "^8.5.23",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2"
   }
 }
