@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -38,6 +38,9 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+      - name: Test scripts
+        run: pnpm test:scripts
 
       - name: Build
         run: pnpm build

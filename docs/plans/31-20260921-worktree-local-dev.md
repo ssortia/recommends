@@ -233,15 +233,26 @@ allocated`.
 - Modify: `package.json`
 - Modify: `.github/workflows/ci.yml`
 
-- [ ] реализовать обёртку: определить имя worktree, собрать занятые порты из `.env` соседних копий (`git worktree list`), проверить доступность порта БД и подсказать `docker compose up -d db`
-- [ ] сгенерировать `.env` из `.env.example` через `buildEnvContent`; при существующем `.env` — вывести текущие параметры и выйти без изменений, перегенерация по `--force`
-- [ ] последовательно выполнить: сборку `@repo/types` и `@repo/utils`, `db:generate`, `db:migrate`, `db:seed`
-- [ ] по завершении напечатать адрес стенда и учётные данные seed-пользователя, взяв их из `apps/api/prisma/seed.ts` (не дублировать константы)
-- [ ] добавить в корневой `package.json` скрипты `setup:worktree` и `test:scripts` (`node --test scripts/lib/*.test.mjs`)
-- [ ] в `.github/workflows/ci.yml` поднять `node-version` до 22 (совпадает с `.nvmrc` и `engines`) и добавить шаг запуска `pnpm test:scripts`
-- [ ] подключить `scripts/` к проверкам: минимальный корневой ESLint flat-config либо явная фиксация отказа в ADR-016
-- [ ] проверить вручную: в чистой копии команда доводит стенд до рабочего состояния, повторный запуск ничего не ломает
-- [ ] запустить `pnpm test:scripts` — тесты должны пройти
+- [x] реализовать обёртку: определить имя worktree, собрать занятые порты из `.env` соседних копий (`git worktree list`), проверить доступность порта БД и подсказать `docker compose up -d db`
+- [x] сгенерировать `.env` из `.env.example` через `buildEnvContent`; при существующем `.env` — вывести текущие параметры и выйти без изменений, перегенерация по `--force`
+- [x] последовательно выполнить: сборку `@repo/types` и `@repo/utils`, `db:generate`, `db:migrate`, `db:seed`
+- [x] по завершении напечатать адрес стенда и учётные данные seed-пользователя, взяв их из `apps/api/prisma/seed.ts` (не дублировать константы)
+- [x] добавить в корневой `package.json` скрипты `setup:worktree` и `test:scripts` (`node --test scripts/lib/*.test.mjs`)
+- [x] в `.github/workflows/ci.yml` поднять `node-version` до 22 (совпадает с `.nvmrc` и `engines`) и добавить шаг запуска `pnpm test:scripts`
+- [x] подключить `scripts/` к проверкам: минимальный корневой ESLint flat-config либо явная фиксация отказа в ADR-016
+- [x] проверить вручную: в чистой копии команда доводит стенд до рабочего состояния, повторный запуск ничего не ломает
+- [x] запустить `pnpm test:scripts` — тесты должны пройти
+
+➕ Сверх плана (подключение `scripts/` к линту): создан корневой `eslint.config.mjs`,
+`eslint` добавлен в devDependencies корня, корневой скрипт `lint` стал
+`turbo run lint && eslint scripts --max-warnings 0`. Отказ от flat-конфига не понадобился.
+
+⚠️ Уточнение по факту проверки: реальный прогон в копии `sandworm` создал `.env`
+(web 3010 / api 3011, БД `recommends_sandworm`), прошёл `db:generate`/`db:migrate`/`db:seed`
+и напечатал адрес `http://sandworm.localhost:3010` и учётку `admin@example.com`.
+Повторный запуск не трогает `.env` и печатает текущие параметры, `--force` перегенерирует.
+Ключи `API_PORT`, `WEB_PORT`, `DB_HOST_PORT`, `CORS_ORIGIN` пока дописываются в конец `.env`,
+так как в `.env.example` их ещё нет — они появятся в Task 5.
 
 ### Task 5: Изоляция сессий и параметризация окружения
 
