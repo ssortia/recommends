@@ -4,7 +4,14 @@ import { z } from 'zod';
 // падала на старте, а не приводила к молчаливому fallback при парсинге длительности.
 const durationSchema = z.string().regex(/^\d+[smhdw]$/, 'must match <number><s|m|h|d|w>, e.g. 24h');
 
-const envSchema = z
+// Заглушки секретов из .env.example и сгенерированного pnpm setup:worktree .env.
+// Проходят проверку min(32), поэтому в production отсекаются отдельным правилом.
+export const DEV_SECRET_PLACEHOLDERS: ReadonlySet<string> = new Set([
+  'change-me-jwt-secret-min-32-chars-long',
+  'change-me-refresh-secret-min-32-chars',
+]);
+
+export const envSchema = z
   .object({
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
     PORT: z.coerce.number().default(3001),
@@ -34,6 +41,19 @@ const envSchema = z
     TELEGRAM_PREVIEW_BASE_URL: z.string().url().default('https://t.me'),
   })
   .superRefine((env, ctx) => {
+    // Dev-заглушки не должны уехать в продакшен при прямом запуске node dist/main.
+    if (env.NODE_ENV === 'production') {
+      for (const field of ['JWT_SECRET', 'JWT_REFRESH_SECRET'] as const) {
+        if (DEV_SECRET_PLACEHOLDERS.has(env[field])) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: [field],
+            message: `${field} must not use the development placeholder value in production`,
+          });
+        }
+      }
+    }
+
     // При реальном SMTP-транспорте поля подключения обязательны.
     if (env.MAIL_TRANSPORT === 'smtp') {
       for (const field of ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS'] as const) {

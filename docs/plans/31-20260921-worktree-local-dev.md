@@ -191,16 +191,22 @@ allocated`.
 - Modify: `apps/api/src/config/env.ts`
 - Create: `apps/api/src/config/env.spec.ts`
 
-- [ ] вынести список известных dev-заглушек (значения секретов из `.env.example`) в константу
-- [ ] в `superRefine` добавить правило: при `NODE_ENV=production` значения `JWT_SECRET` и `JWT_REFRESH_SECRET` из списка заглушек невалидны
-- [ ] написать тесты: заглушка при `production` отклоняется, при `development` проходит
-- [ ] написать тесты: реальный секрет проходит при любом `NODE_ENV`
-- [ ] проверить вручную, что dev-стек `docker compose up` с дефолтными заглушками продолжает работать
-- [ ] запустить `pnpm --filter @repo/api test` — тесты должны пройти
+- [x] вынести список известных dev-заглушек (значения секретов из `.env.example`) в константу
+- [x] в `superRefine` добавить правило: при `NODE_ENV=production` значения `JWT_SECRET` и `JWT_REFRESH_SECRET` из списка заглушек невалидны
+- [x] написать тесты: заглушка при `production` отклоняется, при `development` проходит
+- [x] написать тесты: реальный секрет проходит при любом `NODE_ENV`
+- [x] проверить вручную, что dev-стек `docker compose up` с дефолтными заглушками продолжает работать (проверено статически через `docker-compose.yml` и `docker/api.dev.Dockerfile`: реальный `docker compose up` пропущен — порт 5444 занят чужим контейнером и `.env` ещё не сгенерирован, он появится в Task 4)
+- [x] запустить `pnpm --filter @repo/api test` — тесты должны пройти
 
 ⚠️ Границы: guard покрывает только секреты API. `NEXTAUTH_SECRET` в `apps/web/src/lib/env.ts`
 остаётся без проверки, а `docker-compose.prod.yml` и так требует все секреты через `${VAR:?…}` —
 реальная зона действия guard'а это прямой запуск `node dist/main`. Не переоценивать эффект в ADR.
+
+⚠️ Уточнение по факту реализации: dev-стек `docker compose up` не затронут — сервис `api` в
+`docker-compose.yml` не выставляет `NODE_ENV`, а `docker/api.dev.Dockerfile` не содержит
+`NODE_ENV=production`, поэтому заглушки там продолжают проходить валидацию. Значение
+`NODE_ENV=production` встречается только в `docker-compose.prod.yml` и `docker/api.Dockerfile`,
+где секреты и так обязательны через `${VAR:?…}`.
 
 ### Task 3: Чистая логика подготовки worktree
 
