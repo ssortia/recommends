@@ -83,7 +83,7 @@ pnpm setup:worktree
   Запуск:  pnpm dev
   Адрес:   http://sandworm.localhost:3010
   API:     http://127.0.0.1:3011
-  Вход:    admin@example.com / admin123456
+  Вход:    admin@example.com / 123123123
 ```
 
 Повторный запуск `.env` не трогает: команда печатает текущие параметры и выходит. Перегенерация —
@@ -121,7 +121,7 @@ Swagger — на `http://127.0.0.1:<API_PORT>/api/docs`.
 
 1. Открыть `http://<slug>.localhost:<WEB_PORT>` (именно slug-хост — так сессия не пересечётся с
    другими копиями).
-2. Войти под `admin@example.com` / `admin123456`.
+2. Войти под `admin@example.com` / `123123123`.
 3. После входа — редирект на дашборд.
 
 ### 3. Подтвердить email seed-пользователя

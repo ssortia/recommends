@@ -4,11 +4,12 @@ import * as bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  const password = await bcrypt.hash('admin123456', 10);
+  const password = await bcrypt.hash('123123123', 10);
 
   const admin = await prisma.user.upsert({
     where: { email: 'admin@example.com' },
-    update: { role: 'ADMIN' },
+    // Пароль обновляем тоже: иначе смена дефолта не подхватится в уже засеянной БД
+    update: { role: 'ADMIN', password },
     create: {
       email: 'admin@example.com',
       password,

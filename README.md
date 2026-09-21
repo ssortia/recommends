@@ -70,7 +70,7 @@ pnpm install
 docker compose up -d db
 
 # 4. Подготовить стенд: сгенерировать .env, собрать общие пакеты,
-#    применить миграции и создать пользователя admin@example.com / admin123456
+#    применить миграции и создать пользователя admin@example.com / 123123123
 pnpm setup:worktree
 
 # 5. Запустить проект

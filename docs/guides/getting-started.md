@@ -62,7 +62,7 @@ pnpm setup:worktree
   Запуск:  pnpm dev
   Адрес:   http://localhost:3000
   API:     http://127.0.0.1:3001
-  Вход:    admin@example.com / admin123456
+  Вход:    admin@example.com / 123123123
 ```
 
 Что важно знать:
@@ -78,7 +78,7 @@ pnpm setup:worktree
 - Для работы в нескольких копиях репозитория одновременно — см.
   [worktree-dev.md](./worktree-dev.md).
 
-> ⚠️ Seed создаёт пользователя `admin@example.com` / `admin123456`. Перед деплоем обязательно
+> ⚠️ Seed создаёт пользователя `admin@example.com` / `123123123`. Перед деплоем обязательно
 > измени пароль или удали seed-пользователя.
 
 ### 5. Запустить проект
@@ -98,7 +98,7 @@ pnpm dev
 ## Проверка
 
 1. Открой http://localhost:3000/login
-2. Введи `admin@example.com` / `admin123456`
+2. Введи `admin@example.com` / `123123123`
 3. После успешного входа должен произойти редирект на `/` (дашборд)
 4. Открой http://localhost:3001/api/docs — Swagger должен отображаться
 5. В Swagger выполни `POST /auth/login` — должен вернуться объект с `accessToken` и `refreshToken`
