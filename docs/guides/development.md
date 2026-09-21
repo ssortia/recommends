@@ -16,7 +16,14 @@
 pnpm dev
 ```
 
-Запускает API (порт 3001) и Web (порт 3000) параллельно через Turborepo.
+Запускает API и Web параллельно через Turborepo. **Порты берутся из корневого `.env`**
+(`API_PORT` и `WEB_PORT`), а не задаются в коде: dev-скрипты обоих приложений загружают `.env`
+через `dotenv-cli`. Дефолты, если переменные не заданы, — 3001 для API и 3000 для Web; без
+самого `.env` API не стартует (валидация переменных окружения).
+
+Файл `.env` создаёт команда `pnpm setup:worktree` — она же подбирает свободную пару портов и
+отдельную базу, если репозиторий развёрнут в нескольких копиях одновременно. Подробности и
+частые проблемы — в [worktree-dev.md](./worktree-dev.md).
 
 ### Только один сервис
 
@@ -28,9 +35,9 @@ pnpm --filter @repo/web dev    # только Web
 ### База данных
 
 ```bash
-docker compose up -d   # запустить PostgreSQL
-docker compose down    # остановить
-docker compose ps      # статус контейнеров
+docker compose up -d db   # запустить PostgreSQL (публикуется порт ${DB_HOST_PORT:-5444})
+docker compose down       # остановить
+docker compose ps         # статус контейнеров
 ```
 
 ### Запуск в Docker с HMR
@@ -84,7 +91,8 @@ pnpm --filter @repo/web typecheck
 ## Тесты
 
 ```bash
-pnpm test                          # все тесты
+pnpm test                          # все тесты workspace-пакетов
+pnpm test:scripts                  # тесты скриптов из scripts/ (node --test)
 pnpm --filter @repo/api test       # unit-тесты API
 pnpm --filter @repo/api test:e2e   # e2e тесты API (требует БД)
 ```

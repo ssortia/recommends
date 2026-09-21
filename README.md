@@ -33,6 +33,7 @@
 - **Строгий TypeScript** — strict mode везде, включая `noUncheckedIndexedAccess`
 - **Линтинг** — ESLint v9 flat config с раздельными правилами для NestJS и Next.js
 - **Docker** — multistage Dockerfile для API и Web, nginx-прокси, prod compose
+- **Параллельные копии репозитория** — команда `pnpm setup:worktree` готовит стенд в любом git worktree: своя БД `recommends_<slug>` в общем контейнере Postgres, своя свободная пара портов, свой адрес `http://<slug>.localhost:<порт>` для изоляции сессий (ADR-016)
 - **CI** — GitHub Actions: lint → typecheck → test → build
 
 ---
@@ -60,37 +61,35 @@
 
 ```bash
 # 1. Клонировать и перейти в директорию
-git clone <url> && cd nexst-template
+git clone <url> && cd recommends
 
 # 2. Установить зависимости
 pnpm install
 
-# 3. Настроить переменные окружения
-cp .env.example .env
-# Отредактировать .env: задать JWT_SECRET, NEXTAUTH_SECRET (min 32 символа)
-
-# 4. Запустить PostgreSQL
+# 3. Запустить PostgreSQL (контейнер публикует порт 5444)
 docker compose up -d db
 
-# 5. Подготовить БД
-pnpm --filter @repo/api db:generate  # сгенерировать Prisma Client
-pnpm --filter @repo/api db:migrate   # применить миграции
-pnpm --filter @repo/api db:seed      # создать пользователя admin@example.com / admin123456
+# 4. Подготовить стенд: сгенерировать .env, собрать общие пакеты,
+#    применить миграции и создать пользователя admin@example.com / admin123456
+pnpm setup:worktree
 
-# 6. Запустить проект
+# 5. Запустить проект
 pnpm dev
 ```
 
-После запуска:
+После запуска (порты берутся из `.env` — в основном checkout это 3000/3001):
 
 - Web: http://localhost:3000
 - API: http://localhost:3001
 - Swagger: http://localhost:3001/api/docs
 
-> **Примечание.** `.env` хранится в корне монорепо и является единым источником переменных.
-> Все скрипты пакетов обращаются к нему явно — дублировать файл по пакетам не нужно.
+> **Примечание.** `.env` хранится в корне монорепо и является единым источником переменных:
+> dev-скрипты обоих приложений загружают его через `dotenv-cli`, дублировать файл по пакетам не
+> нужно. Без `.env` API не стартует — его создаёт `pnpm setup:worktree` (существующий файл
+> команда не трогает, перегенерация — по флагу `--force`).
 
-Подробнее: [docs/guides/getting-started.md](./docs/guides/getting-started.md)
+Подробнее: [docs/guides/getting-started.md](./docs/guides/getting-started.md).
+Несколько копий репозитория одновременно: [docs/guides/worktree-dev.md](./docs/guides/worktree-dev.md)
 
 ---
 
@@ -111,6 +110,9 @@ docker/
   api.Dockerfile
   web.Dockerfile
   nginx.conf
+scripts/
+  setup-worktree.mjs   # подготовка локального стенда (pnpm setup:worktree)
+  lib/                 # чистая логика скриптов + тесты node --test
 ```
 
 ---
@@ -118,11 +120,13 @@ docker/
 ## Команды
 
 ```bash
+pnpm setup:worktree                         # подготовить стенд: .env, миграции, seed
 pnpm dev                                    # запустить всё в dev-режиме
 pnpm build                                  # собрать все пакеты
 pnpm lint                                   # ESLint по всему монорепо
 pnpm typecheck                              # TypeScript проверка типов
 pnpm test                                   # запустить тесты
+pnpm test:scripts                           # тесты скриптов из scripts/
 pnpm format                                 # Prettier форматирование
 
 # База данных
@@ -132,7 +136,7 @@ pnpm --filter @repo/api db:seed             # заполнить тестовы�
 pnpm --filter @repo/api db:studio           # открыть Prisma Studio
 
 # Docker
-docker compose up -d                        # запустить PostgreSQL локально
+docker compose up -d db                     # запустить PostgreSQL локально (порт 5444)
 docker compose down                         # остановить
 ```
 
@@ -147,6 +151,7 @@ docker compose down                         # остановить
 | [docs/DOCUMENTATION.md](./docs/DOCUMENTATION.md)                                                               | Правила ведения документации в проекте   |
 | [docs/guides/getting-started.md](./docs/guides/getting-started.md)                                             | Локальная установка шаг за шагом         |
 | [docs/guides/development.md](./docs/guides/development.md)                                                     | Ежедневный workflow разработчика         |
+| [docs/guides/worktree-dev.md](./docs/guides/worktree-dev.md)                                                   | Стенд в копии репозитория (git worktree) |
 | [docs/guides/adding-a-module.md](./docs/guides/adding-a-module.md)                                             | Добавление новой бизнес-сущности         |
 | [docs/guides/email-verification-and-password-reset.md](./docs/guides/email-verification-and-password-reset.md) | Верификация email и сброс пароля         |
 | [docs/guides/deployment.md](./docs/guides/deployment.md)                                                       | Деплой в продакшен                       |
