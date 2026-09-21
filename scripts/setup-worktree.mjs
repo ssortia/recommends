@@ -67,7 +67,8 @@ async function main() {
   const ports =
     slug === MAIN_SLUG
       ? MAIN_PORTS
-      : await pickPortPair(isPortFree, PORT_SEARCH_START, collectReservedPorts(envPath));
+      : (readOwnPorts(envPath) ??
+        (await pickPortPair(isPortFree, PORT_SEARCH_START, collectReservedPorts(envPath))));
 
   const host = slug === MAIN_SLUG ? 'localhost' : `${slug}.localhost`;
   const webUrl = `http://${host}:${ports.webPort}`;
@@ -102,6 +103,32 @@ async function main() {
   console.log(`  Адрес:   ${webUrl}`);
   console.log(`  API:     http://127.0.0.1:${ports.apiPort}`);
   console.log(`  Вход:    ${seed.email} / ${seed.password}`);
+}
+
+/**
+ * Возвращает пару портов, уже закреплённую за этой копией в её `.env`.
+ *
+ * Нужно для `--force`: если стенд копии сейчас запущен, её собственные порты
+ * выглядят занятыми, и подбор увёл бы копию на новую пару. Порты копии — её
+ * собственность, перегенерация их не меняет.
+ *
+ * @param {string} envPath путь к `.env` текущей копии
+ * @returns {{ webPort: number, apiPort: number } | undefined}
+ */
+function readOwnPorts(envPath) {
+  if (!existsSync(envPath)) {
+    return undefined;
+  }
+
+  const content = readFileSync(envPath, 'utf8');
+  const webPort = Number(readEnvValue(content, 'WEB_PORT'));
+  const apiPort = Number(readEnvValue(content, 'API_PORT'));
+
+  if (!Number.isInteger(webPort) || apiPort !== webPort + 1) {
+    return undefined;
+  }
+
+  return { webPort, apiPort };
 }
 
 /**
