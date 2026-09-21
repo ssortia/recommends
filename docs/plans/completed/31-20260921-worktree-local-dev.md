@@ -442,8 +442,8 @@ checkout test-only эндпоинты `/auth/__test/*`. Формально эт�
 
 ### Task 9: [Final] Update documentation
 
-- [ ] обновить `CLAUDE.md`: раздел Common Commands (`pnpm setup:worktree`, `pnpm test:scripts`) и Repository Structure (каталог `scripts/`)
-- [ ] перенести этот план в `docs/plans/completed/`
+- [x] обновить `CLAUDE.md`: раздел Common Commands (`pnpm setup:worktree`, `pnpm test:scripts`) и Repository Structure (каталог `scripts/`)
+- [x] перенести этот план в `docs/plans/completed/`
 
 ## Post-Completion
 
