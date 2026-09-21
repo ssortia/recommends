@@ -63,6 +63,10 @@ pnpm --filter @repo/api db:studio    # open Prisma Studio
 # Docker (local infrastructure: postgres, redis)
 docker compose up -d
 docker compose down
+
+# Локальный стенд в копии репозитория (git worktree)
+pnpm setup:worktree   # .env с уникальными портами и своей БД, миграции, seed
+pnpm test:scripts     # тесты скриптов из scripts/lib (node --test)
 ```
 
 ## Repository Structure
@@ -73,6 +77,7 @@ docker compose down
 - `apps/web` — Next.js 15 frontend (App Router, next-auth v5, shadcn/ui)
 - `packages/` — общие пакеты: `ui`, `types`, `utils`, `config/{eslint,typescript,prettier}`
 - `docker/` — Dockerfile-ы и nginx.conf
+- `scripts/` — обёртка `setup-worktree.mjs` (побочные эффекты) + чистая логика в `lib/` с тестами
 - `.github/workflows/ci.yml` — CI: lint → typecheck → test → build
 
 ## Architecture Decisions
@@ -118,6 +123,10 @@ docker compose down
 - ESLint v9 flat config
 - Separate rule sets for NestJS (Node) and Next.js (browser/React) contexts
 - `eslint-plugin-import` enforces import order
+
+### Локальный запуск (worktree)
+
+- Dev-скрипты читают корневой `.env` через `dotenv-cli`; порты берутся из `API_PORT`/`WEB_PORT`, у каждой копии репозитория своя пара портов, своя БД `recommends_<slug>` и свой хост `<slug>.localhost` — see ADR-016 and `docs/guides/worktree-dev.md`
 
 ## Environment Variables
 
