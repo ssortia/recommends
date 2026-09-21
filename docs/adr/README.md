@@ -25,6 +25,7 @@ ADR (Architecture Decision Record) — короткий документ, фик
 | [013](./013-docs-viewer-api.md)         | Выдача документации (docs/) через API                                    | Принято | 2026-06-15 |
 | [014](./014-user-preferences.md)        | Отдельная таблица `UserPreferences` для preference-полей                 | Принято | 2026-07-13 |
 | [015](./015-source-preferences.md)      | Отдельная таблица `SourcePreference` для описания интересов по источнику | Принято | 2026-07-14 |
+| [016](./016-worktree-local-dev.md)      | Локальный запуск нескольких копий репозитория (worktree)                 | Принято | 2026-09-21 |
 
 ---
 

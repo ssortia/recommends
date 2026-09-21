@@ -1,4 +1,8 @@
-const API_URL = process.env['PLAYWRIGHT_API_URL'] ?? 'http://localhost:3001';
+// Запросы идут со стороны Node, а API слушает только IPv4 — отсюда 127.0.0.1.
+// Порт по умолчанию берётся из корневого `.env` (см. скрипт `test:e2e`),
+// чтобы прогон в worktree не бил в стенд основного checkout.
+const API_URL =
+  process.env['PLAYWRIGHT_API_URL'] ?? `http://127.0.0.1:${process.env['API_PORT'] ?? '3001'}`;
 
 type TokenType = 'EMAIL_VERIFICATION' | 'PASSWORD_RESET';
 
