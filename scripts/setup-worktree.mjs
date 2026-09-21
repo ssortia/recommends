@@ -27,8 +27,8 @@ import {
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-/** Порт общего контейнера Postgres (сервис `db` в docker-compose.yml). */
-const DB_HOST_PORT = 5444;
+/** Порт общего контейнера Postgres по умолчанию (сервис `db` в docker-compose.yml). */
+const DEFAULT_DB_HOST_PORT = 5444;
 
 /** Порты основного checkout: он сохраняет исторические значения. */
 const MAIN_PORTS = { webPort: 3000, apiPort: 3001 };
@@ -47,48 +47,54 @@ async function main() {
   const envPath = path.join(REPO_ROOT, '.env');
   const examplePath = path.join(REPO_ROOT, '.env.example');
 
-  if (existsSync(envPath) && !force) {
-    console.log(`.env уже существует — файл не тронут (перегенерация: --force).`);
-    printEnvSummary(readFileSync(envPath, 'utf8'));
-    return;
-  }
+  // Генерация `.env` пропускается, если файл уже есть (без --force), но
+  // остальные шаги идемпотентны и выполняются всегда: иначе после падения
+  // миграции повторный запуск печатал бы «успех», не доведя стенд.
+  const generateEnv = !existsSync(envPath) || force;
 
-  if (!existsSync(examplePath)) {
+  if (generateEnv && !existsSync(examplePath)) {
     fail(`не найден ${examplePath} — без него нечего брать за основу .env`);
   }
 
-  if (!(await isPortOpen(DB_HOST_PORT))) {
+  const dbHostPort = resolveDbHostPort(envPath, examplePath);
+
+  if (!(await isPortOpen(dbHostPort))) {
     fail(
-      `Postgres недоступен на 127.0.0.1:${DB_HOST_PORT}.\n` +
+      `Postgres недоступен на 127.0.0.1:${dbHostPort}.\n` +
         `Запустите общий контейнер: docker compose up -d db`,
     );
   }
 
-  const ports =
-    slug === MAIN_SLUG
-      ? MAIN_PORTS
-      : (readOwnPorts(envPath) ??
-        (await pickPortPair(isPortFree, PORT_SEARCH_START, collectReservedPorts(envPath))));
+  if (generateEnv) {
+    const ports =
+      slug === MAIN_SLUG
+        ? MAIN_PORTS
+        : (readOwnPorts(envPath) ??
+          (await pickPortPair(isPortFree, PORT_SEARCH_START, collectReservedPorts(envPath))));
 
-  const host = slug === MAIN_SLUG ? 'localhost' : `${slug}.localhost`;
-  const webUrl = `http://${host}:${ports.webPort}`;
+    const host = slug === MAIN_SLUG ? 'localhost' : `${slug}.localhost`;
+    const webUrl = `http://${host}:${ports.webPort}`;
 
-  const content = buildEnvContent(readFileSync(examplePath, 'utf8'), {
-    DATABASE_URL: `postgresql://postgres:postgres@127.0.0.1:${DB_HOST_PORT}/${databaseName}?schema=public`,
-    DB_HOST_PORT,
-    API_PORT: ports.apiPort,
-    WEB_PORT: ports.webPort,
-    NEXTAUTH_URL: webUrl,
-    WEB_URL: webUrl,
-    NEXT_PUBLIC_API_URL: `http://${host}:${ports.apiPort}`,
-    API_URL: `http://127.0.0.1:${ports.apiPort}`,
-    CORS_ORIGIN: `${webUrl},http://localhost:${ports.webPort}`,
-  });
+    const content = buildEnvContent(readFileSync(examplePath, 'utf8'), {
+      DATABASE_URL: `postgresql://postgres:postgres@127.0.0.1:${dbHostPort}/${databaseName}?schema=public`,
+      DB_HOST_PORT: dbHostPort,
+      API_PORT: ports.apiPort,
+      WEB_PORT: ports.webPort,
+      NEXTAUTH_URL: webUrl,
+      WEB_URL: webUrl,
+      NEXT_PUBLIC_API_URL: `http://${host}:${ports.apiPort}`,
+      API_URL: `http://127.0.0.1:${ports.apiPort}`,
+      CORS_ORIGIN: buildCorsOrigin(webUrl, ports.webPort),
+    });
 
-  writeFileSync(envPath, content, 'utf8');
-  console.log(
-    `Сгенерирован .env: БД ${databaseName}, порты web ${ports.webPort} / api ${ports.apiPort}`,
-  );
+    writeFileSync(envPath, content, 'utf8');
+    console.log(
+      `Сгенерирован .env: БД ${databaseName}, порты web ${ports.webPort} / api ${ports.apiPort}`,
+    );
+  } else {
+    console.log(`.env уже существует — файл не тронут (перегенерация: --force).`);
+    printEnvSummary(readFileSync(envPath, 'utf8'));
+  }
 
   run('pnpm', ['--filter', '@repo/types', '--filter', '@repo/utils', 'build']);
   run('pnpm', ['--filter', '@repo/api', 'db:generate']);
@@ -96,13 +102,54 @@ async function main() {
   run('pnpm', ['--filter', '@repo/api', 'db:seed']);
 
   const seed = readSeedCredentials();
+  const finalEnv = readFileSync(envPath, 'utf8');
 
   console.log('');
   console.log('Стенд готов.');
   console.log(`  Запуск:  pnpm dev`);
-  console.log(`  Адрес:   ${webUrl}`);
-  console.log(`  API:     http://127.0.0.1:${ports.apiPort}`);
+  console.log(`  Адрес:   ${readEnvValue(finalEnv, 'NEXTAUTH_URL')}`);
+  console.log(`  API:     ${readEnvValue(finalEnv, 'API_URL')}`);
   console.log(`  Вход:    ${seed.email} / ${seed.password}`);
+}
+
+/**
+ * Порт общего контейнера Postgres на хосте. Берётся из того же источника, что и
+ * `${DB_HOST_PORT}` в `docker-compose.yml`, иначе генератор и compose разошлись бы.
+ *
+ * @param {string} envPath путь к `.env` текущей копии
+ * @param {string} examplePath путь к `.env.example`
+ * @returns {number}
+ */
+function resolveDbHostPort(envPath, examplePath) {
+  const sources = [
+    process.env['DB_HOST_PORT'],
+    ...[envPath, examplePath]
+      .filter((file) => existsSync(file))
+      .map((file) => readEnvValue(readFileSync(file, 'utf8'), 'DB_HOST_PORT')),
+  ];
+
+  for (const value of sources) {
+    const port = Number(value);
+    if (value !== undefined && value !== '' && Number.isInteger(port) && port > 0) {
+      return port;
+    }
+  }
+
+  return DEFAULT_DB_HOST_PORT;
+}
+
+/**
+ * Список origin'ов для CORS: адрес стенда плюс эквивалентные петлевые адреса на
+ * том же порту, чтобы привычный заход на `localhost`/`127.0.0.1` не упирался в CORS.
+ *
+ * @param {string} webUrl адрес стенда для браузера
+ * @param {number} webPort
+ * @returns {string} значение `CORS_ORIGIN`
+ */
+function buildCorsOrigin(webUrl, webPort) {
+  return [...new Set([webUrl, `http://localhost:${webPort}`, `http://127.0.0.1:${webPort}`])].join(
+    ',',
+  );
 }
 
 /**
@@ -201,7 +248,12 @@ function readEnvValue(content, key) {
     return undefined;
   }
 
-  return match[1].trim().replace(/^["']|["']$/g, '');
+  const raw = match[1].trim();
+
+  // Значение в кавычках берём целиком (внутри допустим и `#`), голое — обрезаем
+  // по комментарию: иначе `WEB_PORT=3010 # порт копии` прочитался бы как NaN.
+  const quoted = /^(["'])(.*?)\1/.exec(raw);
+  return quoted === null ? raw.split(/\s+#/)[0].trim() : quoted[2];
 }
 
 /** @param {string} content содержимое `.env` */

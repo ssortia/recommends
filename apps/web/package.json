@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "test:e2e": "playwright test"
+    "test:e2e": "dotenv -e ../../.env -- playwright test"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

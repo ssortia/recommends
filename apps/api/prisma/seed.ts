@@ -4,6 +4,15 @@ import * as bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
+  // Сид безусловно перезаписывает пароль админа, поэтому случайный запуск по
+  // продовому DATABASE_URL молча сбросил бы его на тривиальный.
+  if (process.env['NODE_ENV'] === 'production') {
+    throw new Error(
+      'Сид запрещён при NODE_ENV=production: он перезаписывает пароль admin@example.com. ' +
+        'Данные не изменены.',
+    );
+  }
+
   const password = await bcrypt.hash('123123123', 10);
 
   const admin = await prisma.user.upsert({
