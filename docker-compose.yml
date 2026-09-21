@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: recommends
     ports:
-      - '5444:5432'
+      - '${DB_HOST_PORT:-5444}:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -30,7 +30,7 @@ services:
       - /app/apps/api/dist
       - /app/packages/types/dist
     ports:
-      - '3001:3001'
+      - '${API_PORT:-3001}:3001'
     # Значения ниже имеют приоритет над env_file: фиксируют docker-сетевые адреса
     # (db:5432 вместо localhost) и дефолты JWT, не зависящие от локального .env.
     environment:
@@ -56,7 +56,7 @@ services:
       - /app/apps/web/.next
       - /app/packages/types/dist
     ports:
-      - '3000:3000'
+      - '${WEB_PORT:-3000}:3000'
     environment:
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-change-me-nextauth-secret-min-32-chars}
       NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
